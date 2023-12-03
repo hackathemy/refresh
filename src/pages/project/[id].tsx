@@ -53,34 +53,39 @@ const Page = () => {
     setSelectedValue(value);
   };
 
-
   const [isLogin, setIsLogin] = useState<Boolean>();
   const [balance, setBalance] = useState<number>();
 
   const sendLINK = async () => {
     try {
+      if (!web3 || !web3.currentProvider) {
+        return;
+      }
+
       // ERC-20 토큰 정보
-      const tokenAddress = '0x779877a7b0d9e8603169ddbd7836e478b4624789'; // ERC-20 토큰 주소 (실제 토큰으로 대체)
-      const tokenSymbol = 'LINK'; // ERC-20 토큰 심볼 (실제 토큰으로 대체)
+      const tokenAddress = "0x779877a7b0d9e8603169ddbd7836e478b4624789"; // ERC-20 토큰 주소 (실제 토큰으로 대체)
+      const tokenSymbol = "LINK"; // ERC-20 토큰 심볼 (실제 토큰으로 대체)
       const decimals = 18; // 토큰 소수 자릿수
 
       // 수신자 주소 및 전송할 토큰 양
-      const to = web3.utils.toChecksumAddress('0x9F70C778aD5A738beFD577f12e6e9C1Bc9fBfd48');
-      const value = web3.utils.toWei('0.01', 'ether');
+      const to = web3.utils.toChecksumAddress(
+        "0x9F70C778aD5A738beFD577f12e6e9C1Bc9fBfd48"
+      );
+      const value = web3.utils.toWei("0.01", "ether");
 
       // ERC-20 전송 트랜잭션 데이터 생성
       const data = web3.eth.abi.encodeFunctionCall(
         {
-          name: 'transfer',
-          type: 'function',
+          name: "transfer",
+          type: "function",
           inputs: [
             {
-              type: 'address',
-              name: 'to',
+              type: "address",
+              name: "to",
             },
             {
-              type: 'uint256',
-              name: 'value',
+              type: "uint256",
+              name: "value",
             },
           ],
         },
@@ -90,44 +95,49 @@ const Page = () => {
       // 전송 트랜잭션 생성
       const tx = await web3.eth.sendTransaction({
         to: tokenAddress,
-        from: web3.currentProvider.selectedAddress,
-        value: '0',
+        from: window.ethereum.selectedAddress,
+        value: "0",
         data: data,
-        gas: '200000', // 가스 한도 (적절한 값을 설정)
+        gas: "200000", // 가스 한도 (적절한 값을 설정)
         //gasPrice: web3.utils.toWei('10', 'gwei'), // 가스 가격 (적절한 값을 설정)
       });
 
       console.log(`Successfully transferred  ${tokenSymbol} to `);
-      console.log('Transaction Hash:', tx.transactionHash);
+      console.log("Transaction Hash:", tx.transactionHash);
     } catch (error) {
-      console.error('Error transferring tokens:', error.message);
+      console.error("Error transferring tokens:", error);
     }
   };
 
   const sendBNM = async () => {
     try {
+      if (!web3 || !web3.currentProvider) {
+        return;
+      }
       // ERC-20 토큰 정보
-      const tokenAddress = '0xfd57b4ddbf88a4e07ff4e34c487b99af2fe82a05'; // ERC-20 토큰 주소 (실제 토큰으로 대체)
-      const tokenSymbol = 'CCIP-BnM'; // ERC-20 토큰 심볼 (실제 토큰으로 대체)
+      const tokenAddress = "0xfd57b4ddbf88a4e07ff4e34c487b99af2fe82a05"; // ERC-20 토큰 주소 (실제 토큰으로 대체)
+      const tokenSymbol = "CCIP-BnM"; // ERC-20 토큰 심볼 (실제 토큰으로 대체)
       const decimals = 18; // 토큰 소수 자릿수
 
       // 수신자 주소 및 전송할 토큰 양
-      const to = web3.utils.toChecksumAddress('0x9F70C778aD5A738beFD577f12e6e9C1Bc9fBfd48');
-      const value = web3.utils.toWei('0.01', 'ether');
+      const to = web3.utils.toChecksumAddress(
+        "0x9F70C778aD5A738beFD577f12e6e9C1Bc9fBfd48"
+      );
+      const value = web3.utils.toWei("0.01", "ether");
 
       // ERC-20 전송 트랜잭션 데이터 생성
       const data = web3.eth.abi.encodeFunctionCall(
         {
-          name: 'transfer',
-          type: 'function',
+          name: "transfer",
+          type: "function",
           inputs: [
             {
-              type: 'address',
-              name: 'to',
+              type: "address",
+              name: "to",
             },
             {
-              type: 'uint256',
-              name: 'value',
+              type: "uint256",
+              name: "value",
             },
           ],
         },
@@ -137,22 +147,26 @@ const Page = () => {
       // 전송 트랜잭션 생성
       const tx = await web3.eth.sendTransaction({
         to: tokenAddress,
-        from: web3.currentProvider.selectedAddress,
-        value: '0',
+        from: window.ethereum.selectedAddress,
+        value: "0",
         data: data,
-        gas: '200000', // 가스 한도 (적절한 값을 설정)
+        gas: "200000", // 가스 한도 (적절한 값을 설정)
         //gasPrice: web3.utils.toWei('10', 'gwei'), // 가스 가격 (적절한 값을 설정)
       });
 
       console.log(`Successfully transferred  ${tokenSymbol} to `);
-      console.log('Transaction Hash:', tx.transactionHash);
+      console.log("Transaction Hash:", tx.transactionHash);
     } catch (error) {
-      console.error('Error transferring tokens:', error.message);
+      console.error("Error transferring tokens:", error);
     }
   };
 
   const sendCCIP = async () => {
-    const contractAddress = "0x9F70C778aD5A738beFD577f12e6e9C1Bc9fBfd48  A382a618f2f523Cde15c2"; // Matic 토큰 컨트랙트 주소
+    if (!web3 || !web3.currentProvider) {
+      return;
+    }
+    const contractAddress =
+      "0x9F70C778aD5A738beFD577f12e6e9C1Bc9fBfd48  A382a618f2f523Cde15c2"; // Matic 토큰 컨트랙트 주소
     const contractAbi = TokenContract; // 전송 함수에 대한 ABI
     const contract = new web3.eth.Contract(contractAbi, contractAddress);
 
@@ -161,10 +175,10 @@ const Page = () => {
     const receiver = "0x9F70C778aD5A738beFD577f12e6e9C1Bc9fBfd48 ";
     const text = "Hello, world!";
     const token = "0xFd57b4ddBf88a4e07fF4e34C487b99af2Fe82a05";
-    const amount = web3.utils.toWei('0.01', 'ether');
+    const amount = web3.utils.toWei("0.01", "ether");
 
     // Contract 메서드 호출 데이터 생성
-    const data = contract.methods
+    const data = (contract.methods as any)
       .sendMessagePayLINK(
         //destinationChainSelector,
         receiver,
@@ -190,10 +204,10 @@ const Page = () => {
         method: "eth_sendTransaction",
         params: [transactionObject],
       })
-      .then((txHash) => {
+      .then((txHash: any) => {
         console.log("Transaction Hash:", txHash);
       })
-      .catch((error) => {
+      .catch((error: any) => {
         console.error("Transaction Error:", error);
       });
   };

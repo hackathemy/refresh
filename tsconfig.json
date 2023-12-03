@@ -16,8 +16,8 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    "types": ["ehters",]
+    "types": []
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/hocs/with-auth-guard.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]
 }

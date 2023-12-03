@@ -21,6 +21,9 @@ function WalletButton(): JSX.Element {
   const [balance, setBalance] = useState<number>();
 
   const fireTx = async () => {
+    if (!web3 || !window.ethereum) {
+      return;
+    }
     const contractAddress = "0x18921Ba7EB599DA91C9A382a618f2f523Cde15c2"; // Matic 토큰 컨트랙트 주소
     const contractAbi = TokenContract; // 전송 함수에 대한 ABI
     const contract = new web3.eth.Contract(contractAbi, contractAddress);
@@ -33,7 +36,7 @@ function WalletButton(): JSX.Element {
     const amount = 1000000000000000;
 
     // Contract 메서드 호출 데이터 생성
-    const data = contract.methods
+    const data = (contract.methods as any)
       .sendMessagePayLINK(
         //destinationChainSelector,
         receiver,
@@ -59,10 +62,10 @@ function WalletButton(): JSX.Element {
         method: "eth_sendTransaction",
         params: [transactionObject],
       })
-      .then((txHash) => {
+      .then((txHash: any) => {
         console.log("Transaction Hash:", txHash);
       })
-      .catch((error) => {
+      .catch((error: any) => {
         console.error("Transaction Error:", error);
       });
   };

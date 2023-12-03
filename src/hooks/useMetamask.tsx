@@ -48,7 +48,7 @@ function metamaskReducer(state: State, action: Action): State {
     }
     case "disconnect": {
       window.localStorage.removeItem("metamaskState");
-      if (typeof window.ethereum !== undefined) {
+      if (window.ethereum && typeof window.ethereum !== undefined) {
         window.ethereum.removeAllListeners(["accountsChanged"]);
       }
       return { ...state, wallet: null, balance: null };
