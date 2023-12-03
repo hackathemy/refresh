@@ -28,6 +28,9 @@ import BorderLinearProgress from "@/components/BorderLinearProgress";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import PeopleIcon from "@mui/icons-material/People";
 import HorizontalLinearAlternativeLabelStepper from "@/components/HorizontalLinearAlternativeLabelStepper";
+import { useWeb3 } from "@/hooks/useWeb3";
+import TokenContract from "../../../public/assets/abi/sender_abi.json";
+
 const emails = ["이더리움", "폴리곤"];
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -37,6 +40,7 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 const Page = () => {
+  const [account, web3] = useWeb3();
   const [open, setOpen] = useState(false);
   const [selectedValue, setSelectedValue] = useState(emails[1]);
 
@@ -47,6 +51,151 @@ const Page = () => {
   const handleClose = (value: string) => {
     setOpen(false);
     setSelectedValue(value);
+  };
+
+
+  const [isLogin, setIsLogin] = useState<Boolean>();
+  const [balance, setBalance] = useState<number>();
+
+  const sendLINK = async () => {
+    try {
+      // ERC-20 토큰 정보
+      const tokenAddress = '0x779877a7b0d9e8603169ddbd7836e478b4624789'; // ERC-20 토큰 주소 (실제 토큰으로 대체)
+      const tokenSymbol = 'LINK'; // ERC-20 토큰 심볼 (실제 토큰으로 대체)
+      const decimals = 18; // 토큰 소수 자릿수
+
+      // 수신자 주소 및 전송할 토큰 양
+      const to = web3.utils.toChecksumAddress('0x9F70C778aD5A738beFD577f12e6e9C1Bc9fBfd48');
+      const value = web3.utils.toWei('0.01', 'ether');
+
+      // ERC-20 전송 트랜잭션 데이터 생성
+      const data = web3.eth.abi.encodeFunctionCall(
+        {
+          name: 'transfer',
+          type: 'function',
+          inputs: [
+            {
+              type: 'address',
+              name: 'to',
+            },
+            {
+              type: 'uint256',
+              name: 'value',
+            },
+          ],
+        },
+        [to, value]
+      );
+
+      // 전송 트랜잭션 생성
+      const tx = await web3.eth.sendTransaction({
+        to: tokenAddress,
+        from: web3.currentProvider.selectedAddress,
+        value: '0',
+        data: data,
+        gas: '200000', // 가스 한도 (적절한 값을 설정)
+        //gasPrice: web3.utils.toWei('10', 'gwei'), // 가스 가격 (적절한 값을 설정)
+      });
+
+      console.log(`Successfully transferred  ${tokenSymbol} to `);
+      console.log('Transaction Hash:', tx.transactionHash);
+    } catch (error) {
+      console.error('Error transferring tokens:', error.message);
+    }
+  };
+
+  const sendBNM = async () => {
+    try {
+      // ERC-20 토큰 정보
+      const tokenAddress = '0xfd57b4ddbf88a4e07ff4e34c487b99af2fe82a05'; // ERC-20 토큰 주소 (실제 토큰으로 대체)
+      const tokenSymbol = 'CCIP-BnM'; // ERC-20 토큰 심볼 (실제 토큰으로 대체)
+      const decimals = 18; // 토큰 소수 자릿수
+
+      // 수신자 주소 및 전송할 토큰 양
+      const to = web3.utils.toChecksumAddress('0x9F70C778aD5A738beFD577f12e6e9C1Bc9fBfd48');
+      const value = web3.utils.toWei('0.01', 'ether');
+
+      // ERC-20 전송 트랜잭션 데이터 생성
+      const data = web3.eth.abi.encodeFunctionCall(
+        {
+          name: 'transfer',
+          type: 'function',
+          inputs: [
+            {
+              type: 'address',
+              name: 'to',
+            },
+            {
+              type: 'uint256',
+              name: 'value',
+            },
+          ],
+        },
+        [to, value]
+      );
+
+      // 전송 트랜잭션 생성
+      const tx = await web3.eth.sendTransaction({
+        to: tokenAddress,
+        from: web3.currentProvider.selectedAddress,
+        value: '0',
+        data: data,
+        gas: '200000', // 가스 한도 (적절한 값을 설정)
+        //gasPrice: web3.utils.toWei('10', 'gwei'), // 가스 가격 (적절한 값을 설정)
+      });
+
+      console.log(`Successfully transferred  ${tokenSymbol} to `);
+      console.log('Transaction Hash:', tx.transactionHash);
+    } catch (error) {
+      console.error('Error transferring tokens:', error.message);
+    }
+  };
+
+  const sendCCIP = async () => {
+    const contractAddress = "0x9F70C778aD5A738beFD577f12e6e9C1Bc9fBfd48  A382a618f2f523Cde15c2"; // Matic 토큰 컨트랙트 주소
+    const contractAbi = TokenContract; // 전송 함수에 대한 ABI
+    const contract = new web3.eth.Contract(contractAbi, contractAddress);
+
+    // 메서드의 인자 값 설정
+    const destinationChainSelector = 12532609583862916517;
+    const receiver = "0x9F70C778aD5A738beFD577f12e6e9C1Bc9fBfd48 ";
+    const text = "Hello, world!";
+    const token = "0xFd57b4ddBf88a4e07fF4e34C487b99af2Fe82a05";
+    const amount = web3.utils.toWei('0.01', 'ether');
+
+    // Contract 메서드 호출 데이터 생성
+    const data = contract.methods
+      .sendMessagePayLINK(
+        //destinationChainSelector,
+        receiver,
+        text,
+        token,
+        amount
+      )
+      .encodeABI();
+
+    // 트랜잭션 객체 생성
+    const transactionObject = {
+      from: account,
+      to: contractAddress,
+      gas: "200000", // 예상 가스 비용
+      data: data,
+    };
+
+    console.log(transactionObject);
+
+    // MetaMask로 트랜잭션 전송 요청
+    window.ethereum
+      .request({
+        method: "eth_sendTransaction",
+        params: [transactionObject],
+      })
+      .then((txHash) => {
+        console.log("Transaction Hash:", txHash);
+      })
+      .catch((error) => {
+        console.error("Transaction Error:", error);
+      });
   };
 
   const [isFixed, setIsFixed] = useState(false);
@@ -334,6 +483,33 @@ const Page = () => {
                 onClick={handleClickOpen}
               >
                 펀딩하기
+              </Button>
+              <Button
+                fullWidth
+                size="large"
+                sx={{ mt: 3 }}
+                variant="contained"
+                onClick={sendLINK}
+              >
+                1. LINK 보내기
+              </Button>
+              <Button
+                fullWidth
+                size="large"
+                sx={{ mt: 3 }}
+                variant="contained"
+                onClick={sendBNM}
+              >
+                2. BNM 보내기
+              </Button>
+              <Button
+                fullWidth
+                size="large"
+                sx={{ mt: 3 }}
+                variant="contained"
+                onClick={sendCCIP}
+              >
+                3. CCIP ㄱㄱ
               </Button>
             </Box>
           </Box>
