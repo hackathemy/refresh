@@ -12,8 +12,14 @@ import PersonIcon from "@mui/icons-material/Person";
 import AddIcon from "@mui/icons-material/Add";
 import Typography from "@mui/material/Typography";
 import { blue } from "@mui/material/colors";
-
-const emails = ["이더리움", "폴리곤"];
+import { Alchemy, Network, Utils } from "alchemy-sdk";
+import { useEffect, useState } from "react";
+import Web3 from "web3";
+import TokenContract from "../../../public/assets/abi/sender_abi.json";
+import Erc20TokenContract from "../../../public/assets/abi/erc20_abi.json";
+import { useWeb3 } from "@/hooks/useWeb3";
+import { DialogContent, Divider, TextField } from "@mui/material";
+const emails = ["ETH Sepolia", "Avax"];
 
 export interface SimpleDialogProps {
   open: boolean;
@@ -22,11 +28,44 @@ export interface SimpleDialogProps {
 }
 
 export default function SimpleDialog(props: SimpleDialogProps) {
+  const [account, web3] = useWeb3();
   const { onClose, selectedValue, open } = props;
-
+  const [ tokenAmount, setTokenAmount ] = useState('0');
+  const [ ethAmount, setEthAmount ] = useState('0');
+  const [ avaxAmount, setAvaxAmount ] = useState('0');
+  const [ selectChain, setSelectChain] = useState('');
+  const [openOuterDialog, setOpenOuterDialog] = useState(false);
+  const [openInnerDialog, setOpenInnerDialog] = useState(false);
   const handleClose = () => {
     onClose(selectedValue);
   };
+
+  const handleOpenOuterDialog = () => {
+    setOpenOuterDialog(true);
+  };
+
+  const handleCloseOuterDialog = () => {
+    setOpenOuterDialog(false);
+    // Close inner dialog if it's open when closing the outer dialog
+    if (openInnerDialog) {
+      setOpenInnerDialog(false);
+    }
+  };
+
+  const handleOpenInnerDialog = (selectChain:string) => {
+    setSelectChain(selectChain);
+    if(selectChain === 'avax'){
+      setTokenAmount(avaxAmount);
+    }else if(selectChain === 'sepolia'){
+      setTokenAmount(ethAmount);
+    }
+    setOpenInnerDialog(true);
+  };
+
+  const handleCloseInnerDialog = () => {
+    setOpenInnerDialog(false);
+  };
+  
 
   const handleListItemClick = async (value: string) => {
     if (!window.ethereum) {
@@ -38,36 +77,182 @@ export default function SimpleDialog(props: SimpleDialogProps) {
     onClose(value);
   };
 
+  const sendCCIP = async () => {
+    if (!web3 || !web3.currentProvider) {
+      return;
+    }
+    const contractAddress =
+      "0x18921Ba7EB599DA91C9A382a618f2f523Cde15c2"; // Matic 토큰 컨트랙트 주소
+    const contractAbi = TokenContract; // 전송 함수에 대한 ABI
+    const contract = new web3.eth.Contract(contractAbi, contractAddress);
+
+    // 메서드의 인자 값 설정
+    const destinationChainSelector = 12532609583862916517;
+    const receiver = "0x9F70C778aD5A738beFD577f12e6e9C1Bc9fBfd48";
+    const text = "sm test";
+    const token = "0xFd57b4ddBf88a4e07fF4e34C487b99af2Fe82a05";
+    const amount = web3.utils.toWei("0.1", "ether");
+
+    // Contract 메서드 호출 데이터 생성
+    const data = (contract.methods as any)
+      .sendMessagePayLINK(
+        //destinationChainSelector,
+        receiver,
+        text,
+        token,
+        amount
+      )
+      .encodeABI();
+
+    // 트랜잭션 객체 생성
+    const transactionObject = {
+      from: account,
+      to: contractAddress,
+      gas: "200000", // 예상 가스 비용
+      data: data,
+    };
+
+    console.log(transactionObject);
+
+    // MetaMask로 트랜잭션 전송 요청
+    window.ethereum
+      .request({
+        method: "eth_sendTransaction",
+        params: [transactionObject],
+      })
+      .then((txHash: any) => {
+        console.log("Transaction Hash:", txHash);
+      })
+      .catch((error: any) => {
+        console.error("Transaction Error:", error);
+      });
+
+    setOpenInnerDialog(false);
+    setOpenOuterDialog(false);
+    onClose('dd');
+  };
+
+  const getTokenAmountByCCIP = async () => {
+  
+    const sepoliaSettings = {
+      apiKey: 'jyGk9_KOsb76KLdcSc-kTJSIHymva1SQ', // Replace with your Alchemy API Key.
+      network: Network.ETH_SEPOLIA, // Replace with your network.
+    };
+    const sepolia = new Alchemy(sepoliaSettings);
+
+    // The wallet address / token we want to query for:
+    const ownerAddr = window.ethereum.selectedAddress;
+    const balances = await sepolia.core.getTokenBalances(ownerAddr, [
+      "0xFd57b4ddBf88a4e07fF4e34C487b99af2Fe82a05",
+    ]);
+
+
+    // Removing the '0x' prefix
+    const cleanedHex = balances.tokenBalances[0].tokenBalance?.slice(2);
+
+    // 16진수를 10진수로 변환
+    const decimalValue = BigInt('0x' + cleanedHex);
+
+    // wei에서 ether로 변환
+    const etherValue = Utils.formatUnits(decimalValue.toString(), 'ether');
+
+    
+    console.log("Token Balances:");
+    //const etherValue = web3.utils.fromWei(parseInt(balances.tokenBalances.tokenBalance, 16), 'ether');
+    console.log(etherValue);
+   
+    setEthAmount(etherValue);
+
+    
+  }
+
+  const getTokenAmount2ByCCIP = async () => {
+  
+    const web33 = new Web3(
+      new Web3.providers.HttpProvider(
+        "https://avalanche-fuji.infura.io/v3/ffa05363d7a549f38693cb673e3ba6ae",
+      ),
+    );
+
+    // DAI token contract
+    const tokenContract = "0x0b9d5D9136855f6FEc3c0993feE6E9CE8a297846";
+    // A DAI token holder
+    const tokenHolder = window.ethereum.selectedAddress;
+    const contract = new web33.eth.Contract(Erc20TokenContract, tokenContract);
+
+    const result = await contract.methods.balanceOf(tokenHolder).call();
+    const formattedResult = Utils.formatUnits(result, "ether");
+    //console.log();
+
+    // Removing the '0x' prefix
+   // const cleanedHex = balances.tokenBalances[0].tokenBalance?.slice(2);
+
+    // 16진수를 10진수로 변환
+    //const decimalValue = BigInt('0x' + cleanedHex);
+
+    // wei에서 ether로 변환
+    //const etherValue = web3.utils.fromWei(decimalValue.toString(), 'ether');
+
+    
+    console.log("AVAX Token Balances: " + formattedResult);
+    //const etherValue = web3.utils.fromWei(parseInt(balances.tokenBalances.tokenBalance, 16), 'ether');
+    //console.log(etherValue);
+   
+    setAvaxAmount(formattedResult);
+
+    
+  }
+
+  useEffect(() => {
+    getTokenAmountByCCIP();
+    getTokenAmount2ByCCIP();
+  }, [])
+
   return (
     <Dialog onClose={handleClose} open={open}>
       <DialogTitle>체인 선택하기</DialogTitle>
-      <List sx={{ pt: 0 }}>
-        {emails.map((email) => (
-          <ListItem disableGutters key={email}>
-            <ListItemButton onClick={() => handleListItemClick(email)}>
-              <ListItemAvatar>
-                <Avatar sx={{ bgcolor: blue[100], color: blue[600] }}>
-                  <PersonIcon />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText primary={email} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-        {/* <ListItem disableGutters>
-          <ListItemButton
-            autoFocus
-            onClick={() => handleListItemClick('addAccount')}
-          >
-            <ListItemAvatar>
-              <Avatar>
-                <AddIcon />
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText primary="Add account" />
-          </ListItemButton>
-        </ListItem> */}
-      </List>
+      <DialogContent>
+        <List sx={{ pt: 0 }}>
+          <ListItem disableGutters >
+              <ListItemButton onClick={() => handleOpenInnerDialog('avax')}>
+                <ListItemAvatar>
+                  <Avatar src="/assets/images/avalanche-avax-logo.svg">
+                    <PersonIcon />
+                  </Avatar>
+                </ListItemAvatar>
+                <ListItemText primary={`AVAX/Fuji 보유 BNM 수량 : ${avaxAmount} CCIP-BnM`} />
+              </ListItemButton>
+            </ListItem>
+          <ListItem disableGutters >
+          <ListItemButton onClick={() => handleOpenInnerDialog('sepolia')}>
+                <ListItemAvatar>
+                  <Avatar src="/assets/images/eth-diamond-black-white.jpg">
+                    <PersonIcon />
+                  </Avatar>
+                </ListItemAvatar>
+                <ListItemText primary={`ETH/Sepolia 보유 BNM 수량 : ${ethAmount} CCIP-BnM`} />
+              </ListItemButton>
+            </ListItem>          
+        </List>
+        <Dialog open={openInnerDialog} onClose={handleCloseInnerDialog}>
+          <DialogTitle>펀딩 하기</DialogTitle>
+          <DialogContent>
+            선택한 체인 : {selectChain}
+            <Divider/>
+            펀딩 수량(CCip-BnM)을 입력하세요. 
+            
+            <Divider/>
+            가능 수량 : {tokenAmount}
+            <Divider/>
+            <TextField id="outlined-basic" label="CCIP-BnM 수량 입력" variant="outlined" />
+            <Divider/>
+            <Button variant="outlined" onClick={sendCCIP}>
+              펀딩하기
+            </Button>
+          </DialogContent>
+        </Dialog>
+        
+      </DialogContent>
     </Dialog>
   );
 }

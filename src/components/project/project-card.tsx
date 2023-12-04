@@ -114,7 +114,7 @@ export const ProjectCard = ({ project }: any) => {
             <p></p>
             <BorderLinearProgress variant="determinate" value={70} />
             <Grid container spacing={3} style={{ marginTop: 1 }}>
-              <Grid item xs>
+              <Grid item xs={4}>
                 <Item>
                   Funding goal
                   <Divider />
@@ -122,7 +122,7 @@ export const ProjectCard = ({ project }: any) => {
                   {/* DB에 모금 목표(실패, 성공 여부 상관 없음) */}
                 </Item>
               </Grid>
-              <Grid item xs>
+              <Grid item xs={4}>
                 <Item>
                   Funding people
                   <Divider />
@@ -130,7 +130,7 @@ export const ProjectCard = ({ project }: any) => {
                   {/* 발행된 erc20의 홀더 수 */}
                 </Item>
               </Grid>
-              <Grid item xs>
+              <Grid item xs={4}>
                 <Item>
                   Current
                   <Divider />
@@ -138,7 +138,7 @@ export const ProjectCard = ({ project }: any) => {
                   {/* 여기에 총 펀딩중인 모금 액 */}
                 </Item>
               </Grid>
-              <Grid item xs>
+              <Grid item xs={12}>
                 <Item>
                   Funding duration
                   <Divider />
