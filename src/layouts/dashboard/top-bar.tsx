@@ -26,6 +26,7 @@ export const TopBar = () => {
             display: "inline-flex",
             height: 32,
             width: 180,
+            textDecoration: "none",
           }}
         >
           <Logo />
