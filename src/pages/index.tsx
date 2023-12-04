@@ -8,13 +8,41 @@ import {
   CardMedia,
   Container,
   Grid,
-  Stack,
+  List,
+  ListItem,
+  Link,
   Typography,
 } from "@mui/material";
 import { Layout as DashboardLayout } from "@/layouts/dashboard/layout";
+import NextLink from "next/link";
 
 export default function Home() {
-  const cards = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  const resources = [
+    {
+      title: "Refresh Github",
+      url: "https://github.com/hackathemy/refresh",
+    },
+    {
+      title: "Contract Github",
+      url: "https://github.com/hackathemy/refresh-contract",
+    },
+    {
+      title: "Refresh Contract Explorer (CCIP)",
+      url: "https://",
+    },
+    {
+      title: "Refresh Contract Explorer (CCIP)",
+      url: "https://",
+    },
+    {
+      title: "Refresh Contract Explorer (CCIP)",
+      url: "https://",
+    },
+    {
+      title: "Refresh Contract Explorer (CCIP)",
+      url: "https://",
+    },
+  ];
   return (
     <DashboardLayout>
       <Head>
@@ -148,6 +176,23 @@ export default function Home() {
           image="/assets/images/tree.jpg"
           title="green iguana"
         />
+      </Container>
+      <Container sx={{ py: 6 }} maxWidth="md">
+        <Typography gutterBottom variant="h4">
+          Resources
+        </Typography>
+        <List>
+          {resources.map((resource) => (
+            <ListItem>
+              <Typography variant="body1">
+                {resource.title} :{" "}
+                <Link href={resource.url} component={NextLink}>
+                  {resource.url}
+                </Link>
+              </Typography>
+            </ListItem>
+          ))}
+        </List>
       </Container>
     </DashboardLayout>
   );
