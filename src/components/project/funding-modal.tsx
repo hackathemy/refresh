@@ -54,9 +54,9 @@ export default function SimpleDialog(props: SimpleDialogProps) {
 
   const handleOpenInnerDialog = (selectChain:string) => {
     setSelectChain(selectChain);
-    if(selectChain === 'avax'){
+    if(selectChain === 'AVAX/Fuji'){
       setTokenAmount(avaxAmount);
-    }else if(selectChain === 'sepolia'){
+    }else if(selectChain === 'ETH/Sepolia'){
       setTokenAmount(ethAmount);
     }
     setOpenInnerDialog(true);
@@ -129,13 +129,13 @@ export default function SimpleDialog(props: SimpleDialogProps) {
 
     setOpenInnerDialog(false);
     setOpenOuterDialog(false);
-    onClose('dd');
+    onClose('close');
   };
 
   const getTokenAmountByCCIP = async () => {
   
     const sepoliaSettings = {
-      apiKey: 'jyGk9_KOsb76KLdcSc-kTJSIHymva1SQ', // Replace with your Alchemy API Key.
+      apiKey: process.env.NEXT_PUBLIC_ALCHEMY_SEPOLIA, // Replace with your Alchemy API Key.
       network: Network.ETH_SEPOLIA, // Replace with your network.
     };
     const sepolia = new Alchemy(sepoliaSettings);
@@ -167,10 +167,10 @@ export default function SimpleDialog(props: SimpleDialogProps) {
   }
 
   const getTokenAmount2ByCCIP = async () => {
-  
-    const web33 = new Web3(
+    const infuraAvaxURL = process.env.NEXT_PUBLIC_INFURA_AVAX;    
+    const infura = new Web3(
       new Web3.providers.HttpProvider(
-        "https://avalanche-fuji.infura.io/v3/ffa05363d7a549f38693cb673e3ba6ae",
+        infuraAvaxURL,
       ),
     );
 
@@ -178,7 +178,7 @@ export default function SimpleDialog(props: SimpleDialogProps) {
     const tokenContract = "0x0b9d5D9136855f6FEc3c0993feE6E9CE8a297846";
     // A DAI token holder
     const tokenHolder = window.ethereum.selectedAddress;
-    const contract = new web33.eth.Contract(Erc20TokenContract, tokenContract);
+    const contract = new infura.eth.Contract(Erc20TokenContract, tokenContract);
 
     const result = await contract.methods.balanceOf(tokenHolder).call();
     const formattedResult = Utils.formatUnits(result, "ether");
@@ -214,7 +214,7 @@ export default function SimpleDialog(props: SimpleDialogProps) {
       <DialogContent>
         <List sx={{ pt: 0 }}>
           <ListItem disableGutters >
-              <ListItemButton onClick={() => handleOpenInnerDialog('avax')}>
+              <ListItemButton onClick={() => handleOpenInnerDialog('AVAX/Fuji')}>
                 <ListItemAvatar>
                   <Avatar src="/assets/images/avalanche-avax-logo.svg">
                     <PersonIcon />
@@ -224,7 +224,7 @@ export default function SimpleDialog(props: SimpleDialogProps) {
               </ListItemButton>
             </ListItem>
           <ListItem disableGutters >
-          <ListItemButton onClick={() => handleOpenInnerDialog('sepolia')}>
+          <ListItemButton onClick={() => handleOpenInnerDialog('ETH/Sepolia')}>
                 <ListItemAvatar>
                   <Avatar src="/assets/images/eth-diamond-black-white.jpg">
                     <PersonIcon />
@@ -234,7 +234,7 @@ export default function SimpleDialog(props: SimpleDialogProps) {
               </ListItemButton>
             </ListItem>          
         </List>
-        <Dialog open={openInnerDialog} onClose={handleCloseInnerDialog}>
+        <Dialog open={openInnerDialog} onClose={handleCloseInnerDialog} fullWidth={true} maxWidth={"xs"}>
           <DialogTitle>펀딩 하기</DialogTitle>
           <DialogContent>
             선택한 체인 : {selectChain}
@@ -242,12 +242,15 @@ export default function SimpleDialog(props: SimpleDialogProps) {
             펀딩 수량(CCip-BnM)을 입력하세요. 
             
             <Divider/>
-            가능 수량 : {tokenAmount}
+            가능 수량 : {tokenAmount} CCIP-BnM
             <Divider/>
             <TextField id="outlined-basic" label="CCIP-BnM 수량 입력" variant="outlined" />
             <Divider/>
-            <Button variant="outlined" onClick={sendCCIP}>
+            <Button variant="outlined" onClick={sendCCIP} sx={{marginTop:10,}}>
               펀딩하기
+            </Button>
+            <Button variant="outlined" onClick={handleCloseInnerDialog} sx={{marginTop:10,}}>
+              취소
             </Button>
           </DialogContent>
         </Dialog>
