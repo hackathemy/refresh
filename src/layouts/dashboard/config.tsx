@@ -1,4 +1,8 @@
-import { FaceSmileIcon, LifebuoyIcon } from "@heroicons/react/24/solid";
+import {
+  FaceSmileIcon,
+  LifebuoyIcon,
+  PlusCircleIcon,
+} from "@heroicons/react/24/solid";
 import { SvgIcon } from "@mui/material";
 
 export const items = [
@@ -17,6 +21,15 @@ export const items = [
     icon: (
       <SvgIcon fontSize="small">
         <FaceSmileIcon />
+      </SvgIcon>
+    ),
+  },
+  {
+    title: "Create",
+    path: "/create",
+    icon: (
+      <SvgIcon fontSize="small">
+        <PlusCircleIcon />
       </SvgIcon>
     ),
   },
