@@ -19,6 +19,7 @@
     "@mui/system": "^5.14.14",
     "@types/ethereumjs-util": "^6.1.0",
     "@types/mysql": "^2.15.24",
+    "alchemy-sdk": "^3.1.0",
     "apexcharts": "^3.44.0",
     "axios": "^1.5.1",
     "ethereumjs-util": "^7.1.5",

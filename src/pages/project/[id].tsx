@@ -30,6 +30,9 @@ import PeopleIcon from "@mui/icons-material/People";
 import HorizontalLinearAlternativeLabelStepper from "@/components/HorizontalLinearAlternativeLabelStepper";
 import { useWeb3 } from "@/hooks/useWeb3";
 import TokenContract from "../../../public/assets/abi/sender_abi.json";
+import Erc20TokenContract from "../../../public/assets/abi/erc20_abi.json";
+import Web3 from "web3";
+import { Alchemy, Network } from "alchemy-sdk";
 
 const emails = ["이더리움", "폴리곤"];
 const Item = styled(Paper)(({ theme }) => ({
@@ -43,7 +46,7 @@ const Page = () => {
   const [account, web3] = useWeb3();
   const [open, setOpen] = useState(false);
   const [selectedValue, setSelectedValue] = useState(emails[1]);
-
+  const key = process.env.ALCHEMY_SEPOLIA;
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -69,9 +72,9 @@ const Page = () => {
 
       // 수신자 주소 및 전송할 토큰 양
       const to = web3.utils.toChecksumAddress(
-        "0x9F70C778aD5A738beFD577f12e6e9C1Bc9fBfd48"
+        "0x18921Ba7EB599DA91C9A382a618f2f523Cde15c2"
       );
-      const value = web3.utils.toWei("0.01", "ether");
+      const value = web3.utils.toWei("0.1", "ether");
 
       // ERC-20 전송 트랜잭션 데이터 생성
       const data = web3.eth.abi.encodeFunctionCall(
@@ -121,9 +124,9 @@ const Page = () => {
 
       // 수신자 주소 및 전송할 토큰 양
       const to = web3.utils.toChecksumAddress(
-        "0x9F70C778aD5A738beFD577f12e6e9C1Bc9fBfd48"
+        "0x18921Ba7EB599DA91C9A382a618f2f523Cde15c2"
       );
-      const value = web3.utils.toWei("0.01", "ether");
+      const value = web3.utils.toWei("0.1", "ether");
 
       // ERC-20 전송 트랜잭션 데이터 생성
       const data = web3.eth.abi.encodeFunctionCall(
@@ -166,16 +169,16 @@ const Page = () => {
       return;
     }
     const contractAddress =
-      "0x9F70C778aD5A738beFD577f12e6e9C1Bc9fBfd48  A382a618f2f523Cde15c2"; // Matic 토큰 컨트랙트 주소
+      "0x18921Ba7EB599DA91C9A382a618f2f523Cde15c2"; // Matic 토큰 컨트랙트 주소
     const contractAbi = TokenContract; // 전송 함수에 대한 ABI
     const contract = new web3.eth.Contract(contractAbi, contractAddress);
 
     // 메서드의 인자 값 설정
     const destinationChainSelector = 12532609583862916517;
-    const receiver = "0x9F70C778aD5A738beFD577f12e6e9C1Bc9fBfd48 ";
-    const text = "Hello, world!";
+    const receiver = "0x9F70C778aD5A738beFD577f12e6e9C1Bc9fBfd48";
+    const text = "sm test";
     const token = "0xFd57b4ddBf88a4e07fF4e34C487b99af2Fe82a05";
-    const amount = web3.utils.toWei("0.01", "ether");
+    const amount = web3.utils.toWei("0.1", "ether");
 
     // Contract 메서드 호출 데이터 생성
     const data = (contract.methods as any)
@@ -212,7 +215,79 @@ const Page = () => {
       });
   };
 
+  const getTokenAmount = async () => {
+    
+    const settings = {
+      apiKey: "2Eoge0lW503_Bpdv3P-Ityr_BeFy1qLC", // Replace with your Alchemy API Key.
+      network: Network.MATIC_MUMBAI, // Replace with your network.
+    };
+    const alchemy = new Alchemy(settings);
+    
+    // The wallet address / token we want to query for:
+    const ownerAddr = "0xa2F99Bb25E704b9E4e56bFC2F88314b67698e25B";
+    const balances = await alchemy.core.getTokenBalances(ownerAddr, [
+      "0xf1e3a5842eeef51f2967b3f05d45dd4f4205ff40",
+    ]);
+    
+    // The token address we want to query for metadata:
+    const metadata = await alchemy.core.getTokenMetadata(
+      "0xf1e3a5842eeef51f2967b3f05d45dd4f4205ff40"
+    );
+      console.log(balances);
+    // Removing the '0x' prefix
+    const cleanedHex = balances.tokenBalances[0].tokenBalance.slice(2);
+
+    // 16진수를 10진수로 변환
+    const decimalValue = BigInt('0x' + cleanedHex);
+
+    // wei에서 ether로 변환
+    const etherValue = web3.utils.fromWei(decimalValue.toString(), 'ether');
+
+    
+    console.log("Token Balances:");
+    //const etherValue = web3.utils.fromWei(parseInt(balances.tokenBalances.tokenBalance, 16), 'ether');
+    console.log(etherValue);
+    console.log("Token Metadata: ");
+    console.log(metadata);
+  };
+
   const [isFixed, setIsFixed] = useState(false);
+
+  const getTokenAmountByCCIP = async () => {
+    if (!web3 || !web3.currentProvider) {
+      return;
+    }
+    console.log(key);
+    const sepoliaSettings = {
+      apiKey: 'jyGk9_KOsb76KLdcSc-kTJSIHymva1SQ', // Replace with your Alchemy API Key.
+      network: Network.ETH_SEPOLIA, // Replace with your network.
+    };
+    const sepolia = new Alchemy(sepoliaSettings);
+
+    // The wallet address / token we want to query for:
+    const ownerAddr = window.ethereum.selectedAddress;
+    const balances = await sepolia.core.getTokenBalances(ownerAddr, [
+      "0xFd57b4ddBf88a4e07fF4e34C487b99af2Fe82a05",
+    ]);
+    // The token address we want to query for metadata:
+    const metadata = await sepolia.core.getTokenMetadata(
+      "0xFd57b4ddBf88a4e07fF4e34C487b99af2Fe82a05"
+    );
+    // Removing the '0x' prefix
+    const cleanedHex = balances.tokenBalances[0].tokenBalance.slice(2);
+
+    // 16진수를 10진수로 변환
+    const decimalValue = BigInt('0x' + cleanedHex);
+
+    // wei에서 ether로 변환
+    const etherValue = web3.utils.fromWei(decimalValue.toString(), 'ether');
+
+    
+    console.log("Token Balances:");
+    //const etherValue = web3.utils.fromWei(parseInt(balances.tokenBalances.tokenBalance, 16), 'ether');
+    console.log(etherValue);
+    console.log(metadata);
+  }
 
   useEffect(() => {
     const handleScroll = () => {
@@ -226,6 +301,8 @@ const Page = () => {
         setIsFixed(false);
       }
     };
+
+    getTokenAmountByCCIP();
 
     // 스크롤 이벤트 리스너 추가
     window.addEventListener("scroll", handleScroll);
@@ -488,7 +565,15 @@ const Page = () => {
                   </ListItemButton>
                 </ListItem>
               </List>
-
+              <Button
+                fullWidth
+                size="large"
+                sx={{ mt: 3 }}
+                variant="contained"
+                onClick={getTokenAmount}
+              >
+                token 수량
+              </Button>
               <Button
                 fullWidth
                 size="large"
