@@ -30,10 +30,10 @@ export interface SimpleDialogProps {
 export default function SimpleDialog(props: SimpleDialogProps) {
   const [account, web3] = useWeb3();
   const { onClose, selectedValue, open } = props;
-  const [ tokenAmount, setTokenAmount ] = useState('0');
-  const [ ethAmount, setEthAmount ] = useState('0');
-  const [ avaxAmount, setAvaxAmount ] = useState('0');
-  const [ selectChain, setSelectChain] = useState('');
+  const [tokenAmount, setTokenAmount] = useState("0");
+  const [ethAmount, setEthAmount] = useState("0");
+  const [avaxAmount, setAvaxAmount] = useState("0");
+  const [selectChain, setSelectChain] = useState("");
   const [openOuterDialog, setOpenOuterDialog] = useState(false);
   const [openInnerDialog, setOpenInnerDialog] = useState(false);
   const handleClose = () => {
@@ -52,11 +52,11 @@ export default function SimpleDialog(props: SimpleDialogProps) {
     }
   };
 
-  const handleOpenInnerDialog = (selectChain:string) => {
+  const handleOpenInnerDialog = (selectChain: string) => {
     setSelectChain(selectChain);
-    if(selectChain === 'AVAX/Fuji'){
+    if (selectChain === "AVAX/Fuji") {
       setTokenAmount(avaxAmount);
-    }else if(selectChain === 'ETH/Sepolia'){
+    } else if (selectChain === "ETH/Sepolia") {
       setTokenAmount(ethAmount);
     }
     setOpenInnerDialog(true);
@@ -65,7 +65,6 @@ export default function SimpleDialog(props: SimpleDialogProps) {
   const handleCloseInnerDialog = () => {
     setOpenInnerDialog(false);
   };
-  
 
   const handleListItemClick = async (value: string) => {
     if (!window.ethereum) {
@@ -81,8 +80,7 @@ export default function SimpleDialog(props: SimpleDialogProps) {
     if (!web3 || !web3.currentProvider) {
       return;
     }
-    const contractAddress =
-      "0x18921Ba7EB599DA91C9A382a618f2f523Cde15c2"; // Matic 토큰 컨트랙트 주소
+    const contractAddress = "0x18921Ba7EB599DA91C9A382a618f2f523Cde15c2"; // Matic 토큰 컨트랙트 주소
     const contractAbi = TokenContract; // 전송 함수에 대한 ABI
     const contract = new web3.eth.Contract(contractAbi, contractAddress);
 
@@ -129,11 +127,10 @@ export default function SimpleDialog(props: SimpleDialogProps) {
 
     setOpenInnerDialog(false);
     setOpenOuterDialog(false);
-    onClose('close');
+    onClose("close");
   };
 
   const getTokenAmountByCCIP = async () => {
-  
     const sepoliaSettings = {
       apiKey: process.env.NEXT_PUBLIC_ALCHEMY_SEPOLIA, // Replace with your Alchemy API Key.
       network: Network.ETH_SEPOLIA, // Replace with your network.
@@ -146,32 +143,26 @@ export default function SimpleDialog(props: SimpleDialogProps) {
       "0xFd57b4ddBf88a4e07fF4e34C487b99af2Fe82a05",
     ]);
 
-
     // Removing the '0x' prefix
     const cleanedHex = balances.tokenBalances[0].tokenBalance?.slice(2);
 
     // 16진수를 10진수로 변환
-    const decimalValue = BigInt('0x' + cleanedHex);
+    const decimalValue = BigInt("0x" + cleanedHex);
 
     // wei에서 ether로 변환
-    const etherValue = Utils.formatUnits(decimalValue.toString(), 'ether');
+    const etherValue = Utils.formatUnits(decimalValue.toString(), "ether");
 
-    
     console.log("Token Balances:");
     //const etherValue = web3.utils.fromWei(parseInt(balances.tokenBalances.tokenBalance, 16), 'ether');
     console.log(etherValue);
-   
-    setEthAmount(etherValue);
 
-    
-  }
+    setEthAmount(etherValue);
+  };
 
   const getTokenAmount2ByCCIP = async () => {
-    const infuraAvaxURL = process.env.NEXT_PUBLIC_INFURA_AVAX;    
+    const infuraAvaxURL = process.env.NEXT_PUBLIC_INFURA_AVAX;
     const infura = new Web3(
-      new Web3.providers.HttpProvider(
-        infuraAvaxURL,
-      ),
+      new Web3.providers.HttpProvider(infuraAvaxURL ?? "")
     );
 
     // DAI token contract
@@ -180,12 +171,14 @@ export default function SimpleDialog(props: SimpleDialogProps) {
     const tokenHolder = window.ethereum.selectedAddress;
     const contract = new infura.eth.Contract(Erc20TokenContract, tokenContract);
 
-    const result = await contract.methods.balanceOf(tokenHolder).call();
+    const result = await (contract.methods as any)
+      .balanceOf(tokenHolder)
+      .call();
     const formattedResult = Utils.formatUnits(result, "ether");
     //console.log();
 
     // Removing the '0x' prefix
-   // const cleanedHex = balances.tokenBalances[0].tokenBalance?.slice(2);
+    // const cleanedHex = balances.tokenBalances[0].tokenBalance?.slice(2);
 
     // 16진수를 10진수로 변환
     //const decimalValue = BigInt('0x' + cleanedHex);
@@ -193,68 +186,86 @@ export default function SimpleDialog(props: SimpleDialogProps) {
     // wei에서 ether로 변환
     //const etherValue = web3.utils.fromWei(decimalValue.toString(), 'ether');
 
-    
     console.log("AVAX Token Balances: " + formattedResult);
     //const etherValue = web3.utils.fromWei(parseInt(balances.tokenBalances.tokenBalance, 16), 'ether');
     //console.log(etherValue);
-   
-    setAvaxAmount(formattedResult);
 
-    
-  }
+    setAvaxAmount(formattedResult);
+  };
 
   useEffect(() => {
     getTokenAmountByCCIP();
     getTokenAmount2ByCCIP();
-  }, [])
+  }, []);
 
   return (
     <Dialog onClose={handleClose} open={open}>
       <DialogTitle>체인 선택하기</DialogTitle>
       <DialogContent>
         <List sx={{ pt: 0 }}>
-          <ListItem disableGutters >
-              <ListItemButton onClick={() => handleOpenInnerDialog('AVAX/Fuji')}>
-                <ListItemAvatar>
-                  <Avatar src="/assets/images/avalanche-avax-logo.svg">
-                    <PersonIcon />
-                  </Avatar>
-                </ListItemAvatar>
-                <ListItemText primary={`AVAX/Fuji 보유 BNM 수량 : ${avaxAmount} CCIP-BnM`} />
-              </ListItemButton>
-            </ListItem>
-          <ListItem disableGutters >
-          <ListItemButton onClick={() => handleOpenInnerDialog('ETH/Sepolia')}>
-                <ListItemAvatar>
-                  <Avatar src="/assets/images/eth-diamond-black-white.jpg">
-                    <PersonIcon />
-                  </Avatar>
-                </ListItemAvatar>
-                <ListItemText primary={`ETH/Sepolia 보유 BNM 수량 : ${ethAmount} CCIP-BnM`} />
-              </ListItemButton>
-            </ListItem>          
+          <ListItem disableGutters>
+            <ListItemButton onClick={() => handleOpenInnerDialog("AVAX/Fuji")}>
+              <ListItemAvatar>
+                <Avatar src="/assets/images/avalanche-avax-logo.svg">
+                  <PersonIcon />
+                </Avatar>
+              </ListItemAvatar>
+              <ListItemText
+                primary={`AVAX/Fuji 보유 BNM 수량 : ${avaxAmount} CCIP-BnM`}
+              />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disableGutters>
+            <ListItemButton
+              onClick={() => handleOpenInnerDialog("ETH/Sepolia")}
+            >
+              <ListItemAvatar>
+                <Avatar src="/assets/images/eth-diamond-black-white.jpg">
+                  <PersonIcon />
+                </Avatar>
+              </ListItemAvatar>
+              <ListItemText
+                primary={`ETH/Sepolia 보유 BNM 수량 : ${ethAmount} CCIP-BnM`}
+              />
+            </ListItemButton>
+          </ListItem>
         </List>
-        <Dialog open={openInnerDialog} onClose={handleCloseInnerDialog} fullWidth={true} maxWidth={"xs"}>
+        <Dialog
+          open={openInnerDialog}
+          onClose={handleCloseInnerDialog}
+          fullWidth={true}
+          maxWidth={"xs"}
+        >
           <DialogTitle>펀딩 하기</DialogTitle>
           <DialogContent>
             선택한 체인 : {selectChain}
-            <Divider/>
-            펀딩 수량(CCip-BnM)을 입력하세요. 
-            
-            <Divider/>
+            <Divider />
+            펀딩 수량(CCip-BnM)을 입력하세요.
+            <Divider />
             가능 수량 : {tokenAmount} CCIP-BnM
-            <Divider/>
-            <TextField id="outlined-basic" label="CCIP-BnM 수량 입력" variant="outlined" />
-            <Divider/>
-            <Button variant="outlined" onClick={sendCCIP} sx={{marginTop:10,}}>
+            <Divider />
+            <TextField
+              id="outlined-basic"
+              label="CCIP-BnM 수량 입력"
+              variant="outlined"
+            />
+            <Divider />
+            <Button
+              variant="outlined"
+              onClick={sendCCIP}
+              sx={{ marginTop: 10 }}
+            >
               펀딩하기
             </Button>
-            <Button variant="outlined" onClick={handleCloseInnerDialog} sx={{marginTop:10,}}>
+            <Button
+              variant="outlined"
+              onClick={handleCloseInnerDialog}
+              sx={{ marginTop: 10 }}
+            >
               취소
             </Button>
           </DialogContent>
         </Dialog>
-        
       </DialogContent>
     </Dialog>
   );
