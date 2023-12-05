@@ -19,14 +19,13 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 export default function Home() {
-
-  const [stats, setStats] = useState([]);
+  const [stats, setStats] = useState();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const result = await axios.get("/api/stats");
-        console.log(result)
+        console.log(result);
         setStats(result.data.stats[0]);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -36,7 +35,6 @@ export default function Home() {
     fetchData();
   }, []);
 
-  
   const resources = [
     {
       title: "Refresh Github",
@@ -113,14 +111,11 @@ export default function Home() {
                 flexDirection: "column",
               }}
             >
-             
               <CardContent sx={{ flexGrow: 1 }}>
                 <Typography gutterBottom variant="h5" component="h2">
                   Project Count
                 </Typography>
-                <Typography>
-                  {stats.projectCount}
-                </Typography>
+                <Typography>{(stats as any)?.projectCount}</Typography>
               </CardContent>
             </Card>
           </Grid>
@@ -132,13 +127,12 @@ export default function Home() {
                 flexDirection: "column",
               }}
             >
-             
               <CardContent sx={{ flexGrow: 1 }}>
                 <Typography gutterBottom variant="h5" component="h2">
                   Funding Amount
                 </Typography>
                 <Typography>
-                  {stats.fundingAmount} CCIP-BnM
+                  {(stats as any)?.fundingAmount} CCIP-BnM
                 </Typography>
               </CardContent>
             </Card>
@@ -151,14 +145,11 @@ export default function Home() {
                 flexDirection: "column",
               }}
             >
-             
               <CardContent sx={{ flexGrow: 1 }}>
                 <Typography gutterBottom variant="h5" component="h2">
                   Funding Count
                 </Typography>
-                <Typography>
-                  {stats.fundingCount}
-                </Typography>
+                <Typography>{(stats as any)?.fundingCount}</Typography>
               </CardContent>
             </Card>
           </Grid>
