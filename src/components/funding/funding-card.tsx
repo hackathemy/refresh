@@ -86,6 +86,7 @@ export const FundingCard = ({ funding }: any) => {
                 </Link>
                 <Chip label={`Funding Chain : ${funding.chain}`}  variant="outlined" sx={{marginRight:2,}}/>
                 <Chip label={`Funding address : ${funding.address}`}  variant="outlined" sx={{marginRight:2,}}/>
+                <Chip label={`Funding amount : ${funding.amount}`}  variant="outlined" sx={{marginRight:2,}}/>
               
                 <Chip label={`Funding Date : ${funding.fund_date}`}  variant="outlined" sx={{marginRight:2,}}/>
               

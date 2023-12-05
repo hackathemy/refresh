@@ -63,6 +63,11 @@ const Page = () => {
                 });
               }
 
+              const web3 = new Web3((window as any).ethereum);
+              await window.ethereum.request({
+                method: 'eth_requestAccounts',
+              });
+
               if (!web3 || !web3.currentProvider) {
                 return;
               }
@@ -89,7 +94,7 @@ const Page = () => {
 
               // 트랜잭션 객체 생성
               const transactionObject = {
-                from: account,
+                from: window.ethereum.selectedAddress,
                 to: tokenContract,
                 gas: "400000", // 예상 가스 비용
                 data: data,
