@@ -19,6 +19,8 @@ import TokenContract from "../../../public/assets/abi/sender_abi.json";
 import Erc20TokenContract from "../../../public/assets/abi/erc20_abi.json";
 import { useWeb3 } from "@/hooks/useWeb3";
 import { DialogContent, Divider, TextField } from "@mui/material";
+import axios from "axios";
+import { useRouter } from "next/router";
 const emails = ["ETH Sepolia", "Avax"];
 
 export interface SimpleDialogProps {
@@ -120,6 +122,35 @@ export default function SimpleDialog(props: SimpleDialogProps) {
       })
       .then((txHash: any) => {
         console.log("Transaction Hash:", txHash);
+        
+        const currentUrl = window.location.href;
+        console.log(currentUrl);
+        const projectId = currentUrl.substring(currentUrl.lastIndexOf("/")+1);
+        console.log(projectId);
+        const values = {
+          projectId : projectId,
+          address : account,
+          amount : "0.1",
+          chian : selectChain
+        }
+        try {
+          axios
+            .post("/api/funding/" + projectId, values)
+            .then(async function (response) {
+              if (response.status === 200) {
+                console.log("success");                               
+              } else {
+                console.error(JSON.stringify(response.data));
+              }
+            })
+            .catch(function (error: any) {
+              console.error(JSON.stringify(error));
+            })
+            .finally(() => {});
+        } catch (err: any) {
+          console.log(err.message);
+        }
+
       })
       .catch((error: any) => {
         console.error("Transaction Error:", error);
