@@ -15,8 +15,28 @@ import {
 } from "@mui/material";
 import { Layout as DashboardLayout } from "@/layouts/dashboard/layout";
 import NextLink from "next/link";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 export default function Home() {
+
+  const [stats, setStats] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const result = await axios.get("/api/stats");
+        console.log(result)
+        setStats(result.data.stats[0]);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  
   const resources = [
     {
       title: "Refresh Github",
@@ -80,6 +100,70 @@ export default function Home() {
           </Typography>
         </Container>
       </Box>
+      <Container sx={{ py: 8 }} maxWidth="md">
+        <Typography gutterBottom variant="h4">
+          Current Stats
+        </Typography>
+        <Grid container spacing={4}>
+          <Grid item xs={12} sm={6} md={4}>
+            <Card
+              sx={{
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+             
+              <CardContent sx={{ flexGrow: 1 }}>
+                <Typography gutterBottom variant="h5" component="h2">
+                  Project Count
+                </Typography>
+                <Typography>
+                  {stats.projectCount}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <Card
+              sx={{
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+             
+              <CardContent sx={{ flexGrow: 1 }}>
+                <Typography gutterBottom variant="h5" component="h2">
+                  Funding Amount
+                </Typography>
+                <Typography>
+                  {stats.fundingAmount} CCIP-BnM
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <Card
+              sx={{
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+             
+              <CardContent sx={{ flexGrow: 1 }}>
+                <Typography gutterBottom variant="h5" component="h2">
+                  Funding Count
+                </Typography>
+                <Typography>
+                  {stats.fundingCount}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+      </Container>
       <Container sx={{ py: 8 }} maxWidth="md">
         <Typography gutterBottom variant="h4">
           How can solve?

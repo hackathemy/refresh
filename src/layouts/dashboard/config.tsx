@@ -33,4 +33,13 @@ export const items = [
       </SvgIcon>
     ),
   },
+  {
+    title: "Funding list",
+    path: "/funding",
+    icon: (
+      <SvgIcon fontSize="small">
+        <PlusCircleIcon />
+      </SvgIcon>
+    ),
+  },
 ];

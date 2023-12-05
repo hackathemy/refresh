@@ -19,6 +19,8 @@ import TokenContract from "../../../public/assets/abi/sender_abi.json";
 import Erc20TokenContract from "../../../public/assets/abi/erc20_abi.json";
 import { useWeb3 } from "@/hooks/useWeb3";
 import { DialogContent, Divider, TextField } from "@mui/material";
+import axios from "axios";
+import { useRouter } from "next/router";
 const emails = ["ETH Sepolia", "Avax"];
 
 export interface SimpleDialogProps {
@@ -28,7 +30,7 @@ export interface SimpleDialogProps {
 }
 
 export default function SimpleDialog(props: SimpleDialogProps) {
-  const [account, web3] = useWeb3();
+  //const [account, web3] = useWeb3();
   const { onClose, selectedValue, open } = props;
   const [tokenAmount, setTokenAmount] = useState("0");
   const [ethAmount, setEthAmount] = useState("0");
@@ -67,29 +69,27 @@ export default function SimpleDialog(props: SimpleDialogProps) {
   };
 
   const handleListItemClick = async (value: string) => {
-    if (!window.ethereum) {
-      return;
-    }
-    const accounts = await window.ethereum.request({
-      method: "eth_requestAccounts",
-    });
+
     onClose(value);
   };
 
   const sendCCIP = async () => {
-    if (!web3 || !web3.currentProvider) {
-      return;
-    }
+    console.log(selectChain);
+    const infuraSepoliaURL = process.env.NEXT_PUBLIC_ALCHEMY_SEPOLIA_URL;
+    const infura = new Web3(
+      new Web3.providers.HttpProvider(infuraSepoliaURL ?? "")
+    );
+  
     const contractAddress = "0x18921Ba7EB599DA91C9A382a618f2f523Cde15c2"; // Matic 토큰 컨트랙트 주소
     const contractAbi = TokenContract; // 전송 함수에 대한 ABI
-    const contract = new web3.eth.Contract(contractAbi, contractAddress);
+    const contract = new infura.eth.Contract(contractAbi, contractAddress);
 
     // 메서드의 인자 값 설정
     const destinationChainSelector = 12532609583862916517;
     const receiver = "0x9F70C778aD5A738beFD577f12e6e9C1Bc9fBfd48";
     const text = "sm test";
     const token = "0xFd57b4ddBf88a4e07fF4e34C487b99af2Fe82a05";
-    const amount = web3.utils.toWei("0.1", "ether");
+    const amount = infura.utils.toWei("0.1", "ether");
 
     // Contract 메서드 호출 데이터 생성
     const data = (contract.methods as any)
@@ -104,7 +104,7 @@ export default function SimpleDialog(props: SimpleDialogProps) {
 
     // 트랜잭션 객체 생성
     const transactionObject = {
-      from: account,
+      from: window.ethereum.selectedAddress,
       to: contractAddress,
       gas: "200000", // 예상 가스 비용
       data: data,
@@ -120,6 +120,36 @@ export default function SimpleDialog(props: SimpleDialogProps) {
       })
       .then((txHash: any) => {
         console.log("Transaction Hash:", txHash);
+        
+        const currentUrl = window.location.href;
+        console.log(currentUrl);
+        const projectId = currentUrl.substring(currentUrl.lastIndexOf("/")+1);
+        console.log(projectId);
+        const values = {
+          projectId : projectId,
+          address : window.ethereum.selectedAddress,
+          amount : "0.1",
+          chain : selectChain
+        }
+        try {
+          axios
+            .post("/api/funding/" + projectId, values)
+            .then(async function (response) {
+              if (response.status === 200) {
+                console.log("success");                               
+              } else {
+                console.error(JSON.stringify(response.data));
+              }
+            })
+            .catch(function (error: any) {
+              console.error(JSON.stringify(error));
+            })
+            .finally(() => {});
+        } catch (err: any) {
+          console.log(err.message);
+        }
+        getTokenAmountByCCIP();
+        getTokenAmount2ByCCIP();
       })
       .catch((error: any) => {
         console.error("Transaction Error:", error);
@@ -131,6 +161,7 @@ export default function SimpleDialog(props: SimpleDialogProps) {
   };
 
   const getTokenAmountByCCIP = async () => {
+   
     const sepoliaSettings = {
       apiKey: process.env.NEXT_PUBLIC_ALCHEMY_SEPOLIA, // Replace with your Alchemy API Key.
       network: Network.ETH_SEPOLIA, // Replace with your network.
@@ -160,6 +191,7 @@ export default function SimpleDialog(props: SimpleDialogProps) {
   };
 
   const getTokenAmount2ByCCIP = async () => {
+ 
     const infuraAvaxURL = process.env.NEXT_PUBLIC_INFURA_AVAX;
     const infura = new Web3(
       new Web3.providers.HttpProvider(infuraAvaxURL ?? "")
@@ -194,8 +226,12 @@ export default function SimpleDialog(props: SimpleDialogProps) {
   };
 
   useEffect(() => {
-    getTokenAmountByCCIP();
-    getTokenAmount2ByCCIP();
+    const isConnect = localStorage.getItem('isConnect');
+    if(isConnect == 'true'){
+      getTokenAmountByCCIP();
+      getTokenAmount2ByCCIP();
+    }
+   
   }, []);
 
   return (
@@ -248,6 +284,7 @@ export default function SimpleDialog(props: SimpleDialogProps) {
               id="outlined-basic"
               label="CCIP-BnM 수량 입력"
               variant="outlined"
+              sx={{marginTop:2,}}
             />
             <Divider />
             <Button
@@ -270,34 +307,3 @@ export default function SimpleDialog(props: SimpleDialogProps) {
     </Dialog>
   );
 }
-
-// export default function SimpleDialogDemo() {
-//   const [open, setOpen] = React.useState(false);
-//   const [selectedValue, setSelectedValue] = React.useState(emails[1]);
-
-//   const handleClickOpen = () => {
-//     setOpen(true);
-//   };
-
-//   const handleClose = (value: string) => {
-//     setOpen(false);
-//     setSelectedValue(value);
-//   };
-
-//   return (
-//     <div>
-//       <Typography variant="subtitle1" component="div">
-//         Selected: {selectedValue}
-//       </Typography>
-//       <br />
-//       <Button variant="outlined" onClick={handleClickOpen}>
-//         Open simple dialog
-//       </Button>
-//       <SimpleDialog
-//         selectedValue={selectedValue}
-//         open={open}
-//         onClose={handleClose}
-//       />
-//     </div>
-//   );
-// }

@@ -59,6 +59,7 @@ export const ProjectCard = ({ project }: any) => {
   const [progress, setProgress] = useState(10);
 
   useEffect(() => {
+    
     const timer = setInterval(() => {
       setProgress((prevProgress) =>
         prevProgress >= 100 ? 10 : prevProgress + 10
@@ -118,7 +119,7 @@ export const ProjectCard = ({ project }: any) => {
                 <Item>
                   Funding goal
                   <Divider />
-                  10000 USDC
+                  {project.goal} CCIP-BnM
                   {/* DB에 모금 목표(실패, 성공 여부 상관 없음) */}
                 </Item>
               </Grid>
@@ -126,7 +127,7 @@ export const ProjectCard = ({ project }: any) => {
                 <Item>
                   Funding people
                   <Divider />
-                  10 People
+                  {project.peoples} Peoples
                   {/* 발행된 erc20의 홀더 수 */}
                 </Item>
               </Grid>
@@ -134,7 +135,7 @@ export const ProjectCard = ({ project }: any) => {
                 <Item>
                   Current
                   <Divider />
-                  700 USDC
+                  {project.amount} CCIP-BnM
                   {/* 여기에 총 펀딩중인 모금 액 */}
                 </Item>
               </Grid>
