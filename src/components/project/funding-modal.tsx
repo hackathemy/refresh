@@ -38,6 +38,12 @@ export default function SimpleDialog(props: SimpleDialogProps) {
   const [selectChain, setSelectChain] = useState("");
   const [openOuterDialog, setOpenOuterDialog] = useState(false);
   const [openInnerDialog, setOpenInnerDialog] = useState(false);
+  const [inputValue, setInputValue] = useState('0');
+
+  const handleInputChange = (event:any) => {
+    setInputValue(event.target.value);
+  };
+
   const handleClose = () => {
     onClose(selectedValue);
   };
@@ -128,7 +134,7 @@ export default function SimpleDialog(props: SimpleDialogProps) {
         const values = {
           projectId : projectId,
           address : window.ethereum.selectedAddress,
-          amount : "0.1",
+          amount : inputValue,
           chain : selectChain
         }
         try {
@@ -285,6 +291,8 @@ export default function SimpleDialog(props: SimpleDialogProps) {
               label="CCIP-BnM 수량 입력"
               variant="outlined"
               sx={{marginTop:2,}}
+              value={inputValue} // 
+              onChange={handleInputChange} // inp
             />
             <Divider />
             <Button
