@@ -246,11 +246,7 @@ export default function Home() {
           Architecture
         </Typography>
 
-        <CardMedia
-          sx={{ height: 500, borderRadius: 2, marginBottom: 2 }}
-          image="/assets/images/tree.jpg"
-          title="green iguana"
-        />
+        <img width="100%" src="/assets/images/flow.png" />
       </Container>
       <Container sx={{ py: 6 }} maxWidth="md">
         <Typography gutterBottom variant="h4">

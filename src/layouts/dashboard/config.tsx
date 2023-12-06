@@ -2,6 +2,7 @@ import {
   FaceSmileIcon,
   LifebuoyIcon,
   PlusCircleIcon,
+  ClockIcon,
 } from "@heroicons/react/24/solid";
 import { SvgIcon } from "@mui/material";
 
@@ -25,17 +26,17 @@ export const items = [
     ),
   },
   {
-    title: "Create",
-    path: "/create",
+    title: "Funding History",
+    path: "/funding",
     icon: (
       <SvgIcon fontSize="small">
-        <PlusCircleIcon />
+        <ClockIcon />
       </SvgIcon>
     ),
   },
   {
-    title: "Funding list",
-    path: "/funding",
+    title: "Create",
+    path: "/create",
     icon: (
       <SvgIcon fontSize="small">
         <PlusCircleIcon />
