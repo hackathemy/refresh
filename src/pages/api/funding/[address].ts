@@ -10,13 +10,7 @@ export default async function handler(
       const { projectId, address, amount, chain } = req.body;
       const result = await pool.query(
         "INSERT INTO funding (project_id, address, amount, fund_date, chain) VALUES (?, ?, ?, ?, ?)",
-        [
-          projectId,
-          address,
-          amount,
-          new Date(),
-          chain
-        ]
+        [projectId, address, amount, new Date(), chain]
       );
 
       res.status(200).json({
@@ -24,20 +18,12 @@ export default async function handler(
         result: result,
       });
     } else {
-      // const [rows]: any = await pool.query(
-      //   "SELECT " +
-      //     "id,  " +
-      //     "title,  " +
-      //     "`desc`, " +
-      //     "goal,  " +
-      //     "writer,  " +
-      //     "DATE_FORMAT(start_date, '%Y-%m-%d') AS start_date, " +
-      //     "DATE_FORMAT(end_date, '%Y-%m-%d') AS end_date, " +
-      //     "token_name as tokenName, " +
-      //     "token_symbol as tokenSymbol " +
-      //     "FROM project"
-      // );
-      // res.status(200).json({ projects: rows });
+      const { address } = req.query;
+      const [rows]: any = await pool.query(
+        "SELECT p.*, SUM(f.amount) as amount FROM project p JOIN funding f ON p.id = f.project_id WHERE f.address = ? GROUP BY f.project_id",
+        [address]
+      );
+      res.status(200).json({ projects: rows });
     }
   } catch (error) {
     console.log(error);

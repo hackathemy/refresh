@@ -1,7 +1,7 @@
 import Head from "next/head";
 import { Box, Container } from "@mui/material";
 import { Layout as DashboardLayout } from "../layouts/dashboard/layout";
-import { FundingList } from "@/components/funding/funding-list";
+import { DaoList } from "@/components/dao/dao-list";
 
 const Page = () => {
   return (
@@ -16,7 +16,7 @@ const Page = () => {
         }}
       >
         <Container maxWidth="xl">
-          <FundingList />
+          <DaoList />
         </Container>
       </Box>
     </DashboardLayout>

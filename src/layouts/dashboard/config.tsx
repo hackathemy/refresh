@@ -3,6 +3,7 @@ import {
   LifebuoyIcon,
   PlusCircleIcon,
   ClockIcon,
+  UserGroupIcon,
 } from "@heroicons/react/24/solid";
 import { SvgIcon } from "@mui/material";
 
@@ -31,6 +32,15 @@ export const items = [
     icon: (
       <SvgIcon fontSize="small">
         <ClockIcon />
+      </SvgIcon>
+    ),
+  },
+  {
+    title: "My Funding(DAO)",
+    path: "/dao",
+    icon: (
+      <SvgIcon fontSize="small">
+        <UserGroupIcon />
       </SvgIcon>
     ),
   },
