@@ -78,20 +78,15 @@ export default function Home() {
             component="h1"
             variant="h2"
             align="center"
-            color="text.primary"
+            color="primary"
             gutterBottom
           >
             re-fresh !?
           </Typography>
-          <Typography
-            variant="h5"
-            align="center"
-            color="text.secondary"
-            paragraph
-          >
-            To revive a dying project!
+          <Typography variant="h5" align="center" paragraph>
+            To breathe life into a dying project.
           </Typography>
-          <Typography variant="body1">
+          <Typography variant="body1" color="text.secondary">
             Many projects often lose momentum and updates over time, even after
             initially generating excitement or winning awards at a hackathon.
             Our goal is to see these projects see the light of day again.
@@ -99,9 +94,6 @@ export default function Home() {
         </Container>
       </Box>
       <Container sx={{ py: 8 }} maxWidth="md">
-        <Typography gutterBottom variant="h4">
-          Current Stats
-        </Typography>
         <Grid container spacing={4}>
           <Grid item xs={12} sm={6} md={4}>
             <Card
@@ -112,10 +104,17 @@ export default function Home() {
               }}
             >
               <CardContent sx={{ flexGrow: 1 }}>
-                <Typography gutterBottom variant="h5" component="h2">
-                  Project Count
+                <Typography variant="h2">
+                  {(stats as any)?.projectCount}
                 </Typography>
-                <Typography>{(stats as any)?.projectCount}</Typography>
+                <Typography
+                  gutterBottom
+                  variant="h5"
+                  component="h2"
+                  sx={{ mt: 2 }}
+                >
+                  Projects
+                </Typography>
               </CardContent>
             </Card>
           </Grid>
@@ -128,12 +127,17 @@ export default function Home() {
               }}
             >
               <CardContent sx={{ flexGrow: 1 }}>
-                <Typography gutterBottom variant="h5" component="h2">
+                <Typography variant="h2">
+                  $ {(stats as any)?.fundingAmount}
+                </Typography>
+                <Typography
+                  gutterBottom
+                  variant="h5"
+                  component="h2"
+                  sx={{ mt: 2 }}
+                >
                   Funding Amount
                 </Typography>
-                <Typography>
-                  {(stats as any)?.fundingAmount} CCIP-BnM
-                </Typography>
               </CardContent>
             </Card>
           </Grid>
@@ -146,10 +150,17 @@ export default function Home() {
               }}
             >
               <CardContent sx={{ flexGrow: 1 }}>
-                <Typography gutterBottom variant="h5" component="h2">
-                  Funding Count
+                <Typography variant="h2">
+                  {(stats as any)?.fundingCount}
                 </Typography>
-                <Typography>{(stats as any)?.fundingCount}</Typography>
+                <Typography
+                  gutterBottom
+                  variant="h5"
+                  component="h2"
+                  sx={{ mt: 2 }}
+                >
+                  Transactions
+                </Typography>
               </CardContent>
             </Card>
           </Grid>
@@ -157,7 +168,7 @@ export default function Home() {
       </Container>
       <Container sx={{ py: 8 }} maxWidth="md">
         <Typography gutterBottom variant="h4">
-          How can solve?
+          How to breathe ?
         </Typography>
         <Grid container spacing={4}>
           <Grid item xs={12} sm={6} md={4}>
@@ -181,8 +192,7 @@ export default function Home() {
                   Funding
                 </Typography>
                 <Typography>
-                  Automatic creation of profit distribution system for funding
-                  rewards (vesting)
+                  Easily fund using multichain assets via <strong>CCIP</strong>.
                 </Typography>
               </CardContent>
             </Card>
@@ -208,7 +218,8 @@ export default function Home() {
                   Safe project
                 </Typography>
                 <Typography>
-                  Discover safe projects through multiple certifications
+                  Discover safe projects through various certifications such as{" "}
+                  <strong>PoR</strong>
                 </Typography>
               </CardContent>
             </Card>
@@ -234,7 +245,8 @@ export default function Home() {
                   DAO
                 </Typography>
                 <Typography>
-                  Providing DAO governance system for funding investors
+                  Provides DAO governance system for execution of investor funds
+                  using <strong>Polygon Id</strong>
                 </Typography>
               </CardContent>
             </Card>

@@ -9,7 +9,7 @@ import { SvgIcon } from "@mui/material";
 
 export const items = [
   {
-    title: "re-fresh ?",
+    title: "re-fresh !?",
     path: "/",
     icon: (
       <SvgIcon fontSize="small">

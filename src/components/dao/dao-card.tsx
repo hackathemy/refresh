@@ -1,50 +1,56 @@
-import { Box, Card, CardActionArea, CardContent, styled } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
-import LinearProgress, {
-  linearProgressClasses,
-} from "@mui/material/LinearProgress";
-import { useEffect, useState } from "react";
-import Paper from "@mui/material/Paper";
+import {
+  Box,
+  Button,
+  Card,
+  CardActionArea,
+  CardContent,
+  CardMedia,
+  Chip,
+  Divider,
+  Stack,
+  SvgIcon,
+  Typography,
+} from "@mui/material";
+import { useEffect, useRef, useState } from "react";
+import { TrophyIcon, FaceSmileIcon } from "@heroicons/react/24/solid";
 
-const style = {
-  marginTop: 2,
-  width: "100%",
+export const DaoCard = ({ dao }: any) => {
+  const itKeywords = [
+    "coding",
+    "programming",
+    "developer",
+    "technology",
+    "data",
+    "software",
+    "computer",
+    "code",
+    "web development",
+    "network",
+  ];
 
-  bgcolor: "background.paper",
-};
+  const [progress, setProgress] = useState(0);
+  const [buffer, setBuffer] = useState(10);
 
-const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
-  height: 10,
-  borderRadius: 5,
-  [`&.${linearProgressClasses.colorPrimary}`]: {
-    backgroundColor:
-      theme.palette.grey[theme.palette.mode === "light" ? 200 : 800],
-  },
-  [`& .${linearProgressClasses.bar}`]: {
-    borderRadius: 5,
-    backgroundColor: theme.palette.mode === "light" ? "#1a90ff" : "#308fe8",
-  },
-}));
-
-const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  textAlign: "center",
-  color: theme.palette.text.secondary,
-}));
-
-export const DaoCard = ({ funding }: any) => {
-  const theme = useTheme();
-
-  const [progress, setProgress] = useState(10);
+  const progressRef = useRef(() => {});
+  useEffect(() => {
+    progressRef.current = () => {
+      if (progress > 100) {
+        setProgress(0);
+        setBuffer(10);
+      } else {
+        const diff = Math.random() * 10;
+        const diff2 = Math.random() * 10;
+        setProgress(progress + diff);
+        setBuffer(progress + diff + diff2);
+      }
+    };
+  });
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setProgress((prevProgress) =>
-        prevProgress >= 100 ? 10 : prevProgress + 10
-      );
-    }, 800);
+      progressRef.current();
+    }, 500);
+
     return () => {
       clearInterval(timer);
     };
@@ -52,12 +58,95 @@ export const DaoCard = ({ funding }: any) => {
 
   return (
     <Card>
-      <CardActionArea>
+      <CardActionArea href={`/project/${dao.id}`}>
         <CardContent>
-          <Box sx={{ width: "100%", marginTop: 1 }}>
-            <div>{JSON.stringify(funding)}</div>
+          <Box
+            sx={{
+              alignItems: "left",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <CardMedia
+              sx={{ height: 140, borderRadius: 2, marginBottom: 2 }}
+              image={`https://source.unsplash.com/random?${
+                itKeywords[dao.id % 10]
+              }`}
+              title="green iguana"
+            />
+
+            <Typography gutterBottom variant="h5" sx={{ mt: 3 }}>
+              {dao.title}
+            </Typography>
+            <Typography
+              variant="subtitle1"
+              color="text.secondary"
+              sx={{
+                maxHeight: 50,
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                display: "-webkit-box",
+                WebkitBoxOrient: "vertical",
+                wordWrap: "break-word",
+                lineClamp: 2,
+              }}
+            >
+              {dao.desc}
+            </Typography>
+            <Typography variant="body2" sx={{ mt: 1 }} color="text.secondary">
+              {dao.start_date} ~ {dao.end_date}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {dao.writer}
+            </Typography>
           </Box>
         </CardContent>
+        <Box sx={{ flexGrow: 1 }} />
+        <Divider />
+        <Stack
+          alignItems="center"
+          direction="row"
+          justifyContent="space-between"
+          spacing={2}
+          sx={{ mr: 3 }}
+        >
+          <Stack justifyContent="space-between" spacing={2} sx={{ p: 3 }}>
+            <Stack alignItems="center" direction="row" spacing={1}>
+              <SvgIcon color="action" fontSize="small">
+                <TrophyIcon />
+              </SvgIcon>
+              <Typography
+                display="inline"
+                variant="body2"
+                color="text.secondary"
+              >
+                Total
+              </Typography>
+              <Typography display="inline" variant="subtitle2">
+                {dao.goal} CCIP-BnM
+              </Typography>
+            </Stack>
+            <Stack alignItems="center" direction="row" spacing={1}>
+              <SvgIcon color="action" fontSize="small">
+                <FaceSmileIcon />
+              </SvgIcon>
+              <Typography
+                display="inline"
+                variant="body2"
+                color="text.secondary"
+              >
+                My funding
+              </Typography>
+              <Typography display="inline" variant="subtitle2">
+                {dao.amount ?? 0} CCIP-BnM
+              </Typography>
+            </Stack>
+          </Stack>
+
+          <Button size="large" sx={{ mt: 3 }} variant="contained">
+            Execution Fund
+          </Button>
+        </Stack>
       </CardActionArea>
     </Card>
   );

@@ -1,14 +1,14 @@
 import Head from "next/head";
 import { Box, Container } from "@mui/material";
 import { Layout as DashboardLayout } from "../layouts/dashboard/layout";
-import { FundingList } from "@/components/funding/funding-list";
-import { FundingHistory } from "@/components/funding/funding-history";
+import { useCallback, useState } from "react";
+import { FundingGrid } from "@/components/project/funding-grid";
 
 const Page = () => {
   return (
     <DashboardLayout>
       <Head>
-        <title>Funding</title>
+        <title>Projects</title>
       </Head>
       <Box
         sx={{
@@ -17,7 +17,7 @@ const Page = () => {
         }}
       >
         <Container maxWidth="xl">
-          <FundingHistory />
+          <FundingGrid />
         </Container>
       </Box>
     </DashboardLayout>
