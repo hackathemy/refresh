@@ -43,16 +43,14 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 const Page = () => {
-  
-
   const [open, setOpen] = useState(false);
   const [selectedValue, setSelectedValue] = useState(emails[1]);
-  
+
   const key = process.env.ALCHEMY_SEPOLIA;
   const handleClickOpen = () => {
-    const isConnect = localStorage.getItem('isConnect');
-    if(isConnect != 'true'){
-      alert('지갑 연결이 필요합니다.')
+    const isConnect = localStorage.getItem("isConnect");
+    if (isConnect != "true") {
+      alert("지갑 연결이 필요합니다.");
       return;
     }
     setOpen(true);
@@ -83,7 +81,7 @@ const Page = () => {
       const to = web3.utils.toChecksumAddress(
         "0x18921Ba7EB599DA91C9A382a618f2f523Cde15c2"
       );
-      const value = web3.utils.toWei('0.1', "ether");
+      const value = web3.utils.toWei("0.1", "ether");
 
       // ERC-20 전송 트랜잭션 데이터 생성
       const data = web3.eth.abi.encodeFunctionCall(
@@ -298,8 +296,8 @@ const Page = () => {
   };
 
   useEffect(() => {
-    const isConnect = localStorage.getItem('isConnect');
-    if(isConnect == 'true'){
+    const isConnect = localStorage.getItem("isConnect");
+    if (isConnect == "true") {
       getTokenAmountByCCIP();
     }
 
@@ -314,8 +312,6 @@ const Page = () => {
         setIsFixed(false);
       }
     };
-
-    
 
     // 스크롤 이벤트 리스너 추가
     window.addEventListener("scroll", handleScroll);
@@ -350,7 +346,7 @@ const Page = () => {
             >
               <CardMedia
                 sx={{ height: 300, borderRadius: 2, marginBottom: 1 }}
-                image="/assets/images/tree.jpg"
+                image="https://source.unsplash.com/random?it"
                 title="green iguana"
               />
               <Typography variant="h4">Chip</Typography>

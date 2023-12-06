@@ -30,12 +30,14 @@ export const SideNavItem = (props: ISideNavItemProps) => {
     <ButtonBase
       sx={{
         alignItems: "center",
+        border: title == "create" ? "0.2px solid #00d690" : "none", // 외각선 스타일
         borderRadius: 1,
         display: "flex",
         justifyContent: "flex-start",
         pl: "16px",
         pr: "16px",
         py: "10px",
+        ml: title == "create" ? "2rem" : "0rem",
         textAlign: "left",
         width: "100%",
         ...(active && {

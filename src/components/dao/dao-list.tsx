@@ -12,7 +12,7 @@ export const DaoList = () => {
         const result = await axios.get(
           `/api/funding/${window.ethereum.selectedAddress}`
         );
-        setFundingList(result.data.fundingList);
+        setFundingList(result.data.projects);
       } catch (error) {
         console.error("Error fetching data:", error);
       }

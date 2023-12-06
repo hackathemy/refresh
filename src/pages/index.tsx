@@ -81,7 +81,7 @@ export default function Home() {
             color="text.primary"
             gutterBottom
           >
-            Re-fresh?
+            re-fresh !?
           </Typography>
           <Typography
             variant="h5"

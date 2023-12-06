@@ -9,7 +9,7 @@ import { SvgIcon } from "@mui/material";
 
 export const items = [
   {
-    title: "Refresh ?",
+    title: "re-fresh ?",
     path: "/",
     icon: (
       <SvgIcon fontSize="small">
@@ -18,7 +18,7 @@ export const items = [
     ),
   },
   {
-    title: "Projects",
+    title: "projects",
     path: "/project",
     icon: (
       <SvgIcon fontSize="small">
@@ -27,7 +27,7 @@ export const items = [
     ),
   },
   {
-    title: "Funding History",
+    title: "history",
     path: "/funding",
     icon: (
       <SvgIcon fontSize="small">
@@ -36,7 +36,7 @@ export const items = [
     ),
   },
   {
-    title: "My Funding(DAO)",
+    title: "my funding(dao)",
     path: "/dao",
     icon: (
       <SvgIcon fontSize="small">
@@ -45,7 +45,7 @@ export const items = [
     ),
   },
   {
-    title: "Create",
+    title: "create",
     path: "/create",
     icon: (
       <SvgIcon fontSize="small">
