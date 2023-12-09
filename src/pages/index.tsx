@@ -64,7 +64,7 @@ export default function Home() {
   return (
     <DashboardLayout>
       <Head>
-        <title>Re-fresh</title>
+        <title>RE-fresh</title>
       </Head>
       <Box
         sx={{
@@ -81,7 +81,7 @@ export default function Home() {
             color="primary"
             gutterBottom
           >
-            re-fresh !?
+            RE-fresh !?
           </Typography>
           <Typography variant="h5" align="center" paragraph>
             To breathe life into a dying project.

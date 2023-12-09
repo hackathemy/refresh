@@ -7,7 +7,7 @@ export const Logo = () => {
 
   return (
     <Typography color="primary" variant="h4">
-      re-fresh !
+      RE-fresh !
     </Typography>
   );
 };

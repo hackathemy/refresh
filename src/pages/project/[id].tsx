@@ -7,6 +7,7 @@ import {
   Chip,
   Container,
   Divider,
+  Link,
   List,
   ListItem,
   ListItemButton,
@@ -17,6 +18,7 @@ import {
   TableBody,
   TableCell,
   TableContainer,
+  TableHead,
   TableRow,
   Typography,
   styled,
@@ -33,6 +35,9 @@ import TokenContract from "../../../public/assets/abi/sender_abi.json";
 import Erc20TokenContract from "../../../public/assets/abi/erc20_abi.json";
 import Web3 from "web3";
 import { Alchemy, Network, Utils } from "alchemy-sdk";
+import { useRouter } from "next/router";
+import axios from "axios";
+import { maskAddress } from "@/functions/string-functions";
 
 const emails = ["이더리움", "폴리곤"];
 const Item = styled(Paper)(({ theme }) => ({
@@ -43,6 +48,32 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 const Page = () => {
+  const router = useRouter();
+  const id = router.query.id;
+
+  const [fundingList, setFundingList] = useState([]);
+  const [project, setProject]: any = useState();
+
+  useEffect(() => {
+    if (!id) {
+      return;
+    }
+
+    const fetchData = async () => {
+      try {
+        const result = await axios.get(`/api/project/${id}`);
+        setProject(result.data.project);
+        const fundingResult = await axios.get(`/api/project/${id}/funding`);
+        setFundingList(fundingResult.data.fundingList);
+        console.log(fundingResult.data.fundingList);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, [id]);
+
   const [open, setOpen] = useState(false);
   const [selectedValue, setSelectedValue] = useState(emails[1]);
 
@@ -349,17 +380,9 @@ const Page = () => {
                 image="https://source.unsplash.com/random?it"
                 title="green iguana"
               />
-              <Typography variant="h4">Chip</Typography>
-              <Typography variant="subtitle2">
-                안녕하세요! 저는 Deal or No Deal의 Brad의 친구 Rochelle입니다!
-                여러분 모두가 거래나 노딜에서 브래드의 파괴적인 게임을 보셨을
-                겁니다. 그의 돈디 가족은 정말로 그가 자신의 꿈을 이루기를 원하고
-                우리는 누군가가 2파운드 정도를 절약해서 브래드가 버킷리스트에서
-                조금이라도 벗어나도록 할 수 있기를 기대하고 이것을 설정했습니다.
-                사랑합니다 브래드
-              </Typography>
+              <Typography variant="h4">{project?.title}</Typography>
+              <Typography variant="body1">{project?.desc}</Typography>
 
-              <div style={{ marginTop: 100 }}></div>
               <HorizontalLinearAlternativeLabelStepper />
 
               <TableContainer component={Paper} style={{ marginTop: 50 }}>
@@ -494,42 +517,87 @@ const Page = () => {
                   </ListItemButton>
                 </ListItem>
               </List>
-
-              <List
-                sx={{
-                  marginTop: 10,
-                  width: "100%",
-
-                  bgcolor: "background.paper",
-                }}
-              >
-                <Typography variant="h4">댓글</Typography>
-
-                <Divider variant="inset" component="li" />
-                <ListItem>
-                  <ListItemText
-                    primary="Solution"
-                    secondary="Jan 9, 2014"
-                    sx={{ width: "10%" }}
-                  />
-                  <ListItemText
-                    sx={{ width: "70%" }}
-                    primary="Chip has an award-winning & highly rated app (‘People’s Choice Award 23’ Finder, 4.5* on the App Store) giving users one place to effortlessly & automatically build wealth across savings & investments"
-                  />
-                </ListItem>
-                <Divider variant="inset" component="li" />
-                <ListItem>
-                  <ListItemText
-                    primary="Business model"
-                    secondary="Jan 9, 2014"
-                    sx={{ width: "10%" }}
-                  />
-                  <ListItemText
-                    sx={{ width: "70%" }}
-                    primary="We offer competitive savings products and investment products, our revenue is a mix of spreads on returns or subscription fees on these. As AuA grows, so does revenue"
-                  />
-                </ListItem>
-              </List>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Project</TableCell>
+                    <TableCell>Chain</TableCell>
+                    <TableCell>Address</TableCell>
+                    <TableCell>Amount</TableCell>
+                    <TableCell>Date</TableCell>
+                    <TableCell>Tracking</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {fundingList &&
+                    fundingList.map((funding: any) => {
+                      return (
+                        <TableRow hover key={funding.id}>
+                          <TableCell>
+                            <Link
+                              style={{
+                                textDecoration: "none",
+                                color: "#80b6da",
+                              }}
+                              href={`https://refresh.hackathemy.me/project/${funding.project_id}`}
+                            >
+                              {funding.project_title}
+                            </Link>
+                          </TableCell>
+                          <TableCell>{funding.chain}</TableCell>
+                          <TableCell>
+                            <Link
+                              style={{
+                                textDecoration: "none",
+                                color: "#80b6da",
+                              }}
+                              href={`https://refresh.hackathemy.me/project/${funding.project_id}`}
+                            >
+                              {maskAddress(funding.address)}
+                            </Link>
+                          </TableCell>
+                          <TableCell>{funding.amount} CCIP-BnM</TableCell>
+                          <TableCell>{funding.fund_date}</TableCell>
+                          <TableCell>
+                            <Link
+                              href={`https://ccip.chain.link/msg/0xdfcd24985af75ee603013f35a6eef92369132f7d62be898c6f0903e8ed11daf9`}
+                              target="_blank"
+                            >
+                              <Chip
+                                label="CCIP Explorer"
+                                color="primary"
+                                variant="outlined"
+                                sx={{ marginRight: 2 }}
+                              />
+                            </Link>
+                            <Link
+                              href={`https://ccip.chain.link/msg/0xdfcd24985af75ee603013f35a6eef92369132f7d62be898c6f0903e8ed11daf9`}
+                              target="_blank"
+                            >
+                              <Chip
+                                label="Source"
+                                color="primary"
+                                variant="outlined"
+                                sx={{ marginRight: 2 }}
+                              />
+                            </Link>
+                            <Link
+                              href={`https://ccip.chain.link/msg/0xdfcd24985af75ee603013f35a6eef92369132f7d62be898c6f0903e8ed11daf9`}
+                              target="_blank"
+                            >
+                              <Chip
+                                label="Destination"
+                                color="primary"
+                                variant="outlined"
+                                sx={{ marginRight: 2 }}
+                              />
+                            </Link>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                </TableBody>
+              </Table>
             </Box>
             <Box
               gridColumn="span 4"

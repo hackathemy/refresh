@@ -25,12 +25,12 @@ import { useWeb3 } from "@/hooks/useWeb3";
 import { MetaMaskInpageProvider } from "@metamask/providers";
 
 const Page = () => {
-  const [ account, web3 ] = useWeb3();
+  const [account, web3] = useWeb3();
 
   const getCurChainId = async () => {
     const eth = window.ethereum as MetaMaskInpageProvider;
     const curChainId = await eth.request({
-      method: 'eth_chainId',
+      method: "eth_chainId",
     });
     console.log("curChainId : " + curChainId);
     return curChainId;
@@ -54,10 +54,10 @@ const Page = () => {
             if (response.status === 200) {
               console.log("success");
               const insertId = response.data.result[0].insertId;
-              
-              if(await getCurChainId() !== '80001'){
+
+              if ((await getCurChainId()) !== "80001") {
                 await window.ethereum.request({
-                  method: 'wallet_switchEthereumChain',
+                  method: "wallet_switchEthereumChain",
                   // 0x13881 == 80001 == polygon testnet chain ID
                   params: [{ chainId: "0x13881" }],
                 });
@@ -65,7 +65,7 @@ const Page = () => {
 
               const web3 = new Web3((window as any).ethereum);
               await window.ethereum.request({
-                method: 'eth_requestAccounts',
+                method: "eth_requestAccounts",
               });
 
               if (!web3 || !web3.currentProvider) {
@@ -73,23 +73,24 @@ const Page = () => {
               }
 
               // DAI token contract
-              const tokenContract = "0x9F70C778aD5A738beFD577f12e6e9C1Bc9fBfd48";
+              const tokenContract =
+                "0x9F70C778aD5A738beFD577f12e6e9C1Bc9fBfd48";
               // A DAI token holder
               const tokenHolder = window.ethereum.selectedAddress;
-              const contract = new web3.eth.Contract(PolygonContractABI, tokenContract);
+              const contract = new web3.eth.Contract(
+                PolygonContractABI,
+                tokenContract
+              );
 
               // 메서드의 인자 값 설정
-              const contentUri = "https://refresh.hackathemy.me/project/" + insertId;
+              const contentUri =
+                "https://refresh.hackathemy.me/project/" + insertId;
               const tokenName = values.tokenName;
               const tokenSymbol = values.tokenSymbol;
 
               // Contract 메서드 호출 데이터 생성
               const data = (contract.methods as any)
-                .createProject(
-                  contentUri,
-                  tokenName,
-                  tokenSymbol
-                )
+                .createProject(contentUri, tokenName, tokenSymbol)
                 .encodeABI();
 
               // 트랜잭션 객체 생성
@@ -114,7 +115,6 @@ const Page = () => {
                 .catch((error: any) => {
                   console.error("Transaction Error:", error);
                 });
-             
             } else {
               console.error(JSON.stringify(response.data));
             }
@@ -168,7 +168,9 @@ const Page = () => {
                     value={formik.values.desc}
                   />
                   <TextField
-                    error={!!(formik.touched.tokenName && formik.errors.tokenName)}
+                    error={
+                      !!(formik.touched.tokenName && formik.errors.tokenName)
+                    }
                     fullWidth
                     label="TokenName"
                     name="tokenName"
@@ -178,7 +180,11 @@ const Page = () => {
                     value={formik.values.tokenName}
                   />
                   <TextField
-                    error={!!(formik.touched.tokenSymbol && formik.errors.tokenSymbol)}
+                    error={
+                      !!(
+                        formik.touched.tokenSymbol && formik.errors.tokenSymbol
+                      )
+                    }
                     fullWidth
                     label="TokenSymbol"
                     name="tokenSymbol"

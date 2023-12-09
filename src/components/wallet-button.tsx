@@ -10,18 +10,14 @@ import { useWeb3 } from "@/hooks/useWeb3";
 import TokenContract from "../../public/assets/abi/sender_abi.json";
 import { MetaMaskInpageProvider } from "@metamask/providers";
 import Web3 from "web3";
-
-function maskAddress(address: string): string {
-  // For example, display only the first 6 and last 4 characters
-  const masked: string = `${address.substring(0, 6)}...${address.slice(-4)}`;
-  return masked;
-}
+import { maskAddress } from "@/functions/string-functions";
 
 function WalletButton(): JSX.Element {
   //const [account, web3] = useWeb3();
   const [isLogin, setIsLogin] = useState<Boolean>();
   const [balance, setBalance] = useState<number>();
   const [account, setAccount] = useState("");
+
   // const fireTx = async () => {
   //   if (!web3 || !window.ethereum) {
   //     return;
