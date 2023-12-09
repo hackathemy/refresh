@@ -27,15 +27,6 @@ export const items = [
     ),
   },
   {
-    title: "My Funding(DAO)",
-    path: "/dao",
-    icon: (
-      <SvgIcon fontSize="small">
-        <UserGroupIcon />
-      </SvgIcon>
-    ),
-  },
-  {
     title: "My Project",
     path: "/my",
     icon: (

@@ -17,7 +17,7 @@ import {
 } from "@mui/material";
 import { Layout as DashboardLayout } from "../layouts/dashboard/layout";
 import { useCallback, useState } from "react";
-import { FundingGrid } from "@/components/project/funding-grid";
+import { FundingGrid } from "@/components/project/project-grid";
 import Web3, { validator } from "web3";
 import axios from "axios";
 import PolygonContractABI from "../../public/assets/abi/polygon_contract.json";

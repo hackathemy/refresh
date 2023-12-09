@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { ProjectCard } from "./project-card";
 
-export const FundingGrid = () => {
+export const ProjectGrid = () => {
   const [projects, setProjects] = useState([]);
 
   useEffect(() => {

@@ -1,16 +1,12 @@
 import {
   Box,
   Card,
-  CardContent,
   Chip,
-  Container,
-  Grid,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
-  Typography,
 } from "@mui/material";
 import Link from "next/link";
 import axios from "axios";
@@ -24,19 +20,12 @@ const statusMap: any = {
 
 export const FundingHistory = () => {
   const [fundingList, setFundingList] = useState([]);
-  const [stats, setStats] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const result = await axios.get("/api/funding");
         setFundingList(result.data.fundingList);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-      try {
-        const result = await axios.get("/api/fund-stats");
-        setStats(result.data.stats);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -47,44 +36,6 @@ export const FundingHistory = () => {
 
   return (
     <Card>
-      <Container sx={{ py: 8 }} maxWidth="md">
-        <Grid container spacing={2}>
-          {stats &&
-            stats.map((stat: any) => {
-              return (
-                <Grid item xs={12} sm={4} md={3}>
-                  <Card
-                    sx={{
-                      height: "100%",
-                      display: "flex",
-                      flexDirection: "column",
-                    }}
-                  >
-                    <CardContent sx={{ flexGrow: 1 }}>
-                      <Typography variant="h4">{stat.chain}</Typography>
-                      <Typography
-                        gutterBottom
-                        variant="h5"
-                        component="h2"
-                        sx={{ mt: 2 }}
-                      >
-                        {stat.amount} CCIP-BnM
-                      </Typography>
-                      <Typography
-                        gutterBottom
-                        variant="h5"
-                        component="h2"
-                        sx={{ mt: 2 }}
-                      >
-                        {stat.count} Txs
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              );
-            })}
-        </Grid>
-      </Container>
       <Box sx={{ minWidth: 800 }}>
         <Table>
           <TableHead>
