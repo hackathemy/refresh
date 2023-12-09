@@ -65,7 +65,6 @@ const Page = () => {
         setProject(result.data.project);
         const fundingResult = await axios.get(`/api/project/${id}/funding`);
         setFundingList(fundingResult.data.fundingList);
-        console.log(fundingResult.data.fundingList);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
