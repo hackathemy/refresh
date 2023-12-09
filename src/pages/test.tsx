@@ -3,17 +3,39 @@ import * as material from "@mui/material";
 import { Layout as DashboardLayout } from "../layouts/dashboard/layout";
 import { ethers } from "ethers";
 import { networks } from "@/types/networks";
+import React, { useState, ChangeEvent, KeyboardEvent } from "react";
+
 // import { useWeb3 } from "@/hooks/useWeb3";
 
 const Page = () => {
   // TODO: 이거 usestate? global state 변경해줘야 하는데 어떻게 해야할지 모르겠습니다..
   // const [account, web3] = useWeb3();
-  const Amount = 20000;
   const PROTOCOL_ADDRESS = `0x8edbc869108da99f6feb062136bc7d7aa5764542`;
+
+  const [inputNetwork, setNetwork] = useState("");
+  const [inputAmount, setAmount] = useState("");
+
+  const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      const network = (e.target as HTMLInputElement).value;
+      setNetwork(network);
+    }
+  };
+
+  const handleKeyPressOnAmount = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      const amount = (e.target as HTMLInputElement).value;
+      setAmount(amount);
+    }
+  };
+
+  const handleChangeOnAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setAmount(e.target.value);
+  };
 
   // TODO: What about moving these all function to function directory in next.js src
   const SwitchNetworkComponent = () => {
-    const selectedNetwork = "fuji";
+    const selectedNetwork = inputNetwork;
     // Save window.ethereum globally for use across multiple pages
     if (window.ethereum) {
       window.ethereum.enable(); // Enable Ethereum provider
@@ -26,7 +48,6 @@ const Page = () => {
       const switchToNetwork = async () => {
         try {
           const chainId = "0x" + networks[selectedNetwork].chainId.toString(16);
-          console.log(chainId);
 
           // Switch network using provider.send method
           // TODO: make this as a object for using in network types
@@ -42,9 +63,6 @@ const Page = () => {
               blockExplorerUrls: [networks[selectedNetwork].blockExplorerURL],
             },
           ]);
-
-          // You can add additional logic or UI updates after the network switch
-          alert("Switched to Binance Smart Chain");
         } catch (error) {
           console.error("Error switching network:", error);
         }
@@ -62,15 +80,7 @@ const Page = () => {
       if (!window.ethereum) {
         return;
       }
-      // TODO: check this network id or name and should not be set polygon network.
-      // const networkId = await window.ethereum.request({
-      // method: "net_version",
-      // });
-      // console.log("Connected Network ID:", networkId);
-
-      // TODO: change to input? in async (networkName:string)
-      const networkName: string = "fuji";
-      const infuraSepoliaURL = process.env.NEXT_PUBLIC_ALCHEMY_SEPOLIA_URL;
+      const networkName: string = inputNetwork;
 
       // providers
       const provider = new ethers.BrowserProvider(window.ethereum);
@@ -87,7 +97,8 @@ const Page = () => {
       );
 
       // Approve the spender
-      const tx = await erc20Contract.approve(fundingContractAddress, 20000);
+      const amount = parseInt(inputAmount);
+      const tx = await erc20Contract.approve(fundingContractAddress, amount);
       await tx.wait();
 
       // TODO: change to temprary modal for ux
@@ -110,7 +121,7 @@ const Page = () => {
 
       // TODO: change to input? in async (networkName:string)
       // TODO: change to use netowork name from current connected network id or name, somethign
-      const networkName: string = "fuji";
+      const networkName: string = inputNetwork;
       // providers
       const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
@@ -148,7 +159,7 @@ const Page = () => {
       if (!window.ethereum) {
         return;
       }
-      const networkName: string = "fuji";
+      const networkName: string = inputNetwork;
 
       // providers
       const provider = new ethers.BrowserProvider(window.ethereum);
@@ -177,30 +188,12 @@ const Page = () => {
         PROTOCOL_ADDRESS, // receive address = polygon protocol address
         1, // project index
         erc20ContractAddress, // token
-        20000 // amount
+        inputAmount // amount
       );
 
       const receipt = await tx.wait();
-      // Assuming there is an Event interface with the expected structure
-      interface Event {
-        event: string;
-        args: {
-          messageId: string;
-        };
-      }
-      // Find the "MessageSent" event in the transaction logs
-      const messageSentEvent = receipt.events.find(
-        (event: Event) => event.event === "MessageSent"
-      );
-
-      if (messageSentEvent) {
-        // Access the return value from the event
-        const messageId = messageSentEvent.args.messageId;
-        console.log("Message ID:", messageId);
-        alert(`https://ccip.chain.link/msg/${messageId}`);
-      } else {
-        console.error("MessageSent event not found in transaction logs");
-      }
+      console.log(receipt);
+      alert(`${receipt}`);
     } catch (error) {
       console.error("Error approving spender:", error);
       alert("Error transferring tokens. Check the console for details.");
@@ -221,11 +214,17 @@ const Page = () => {
         <material.Container maxWidth="xl">
           <material.Card>
             <material.CardContent>
-              <material.Button fullWidth size="large" variant="contained">
-                Here is a test components for interacting blockchain network and
-                contract
+              Here is a test components for interacting blockchain network and
+              contract
+              <material.Button fullWidth size="large" sx={{}}>
+                Set Network For Testing :{inputNetwork}
+                <material.TextField
+                  sx={{ ml: 3, width: "20%", height: "5%" }}
+                  type="text"
+                  label="Enter a network name"
+                  onKeyDown={handleKeyPress}
+                />
               </material.Button>
-
               <material.Button
                 fullWidth
                 size="large"
@@ -233,17 +232,25 @@ const Page = () => {
                 variant="contained"
                 onClick={SwitchNetworkComponent}
               >
-                <div>Chain Network To Fuji</div>
+                <div>Chain Network To {inputNetwork} </div>
               </material.Button>
-              <material.Button
-                fullWidth
-                size="large"
-                sx={{ mt: 3 }}
-                variant="contained"
-                onClick={approveToken}
-              >
-                Approve Fund Token
-              </material.Button>
+              <material.Card sx={{ mt: 3 }}>
+                Approve Fund Token: {inputAmount}
+                <material.TextField
+                  sx={{ ml: 3, width: "20%" }}
+                  type="text"
+                  label="Enter a amout which you want to fund"
+                  onKeyDown={handleKeyPressOnAmount}
+                  onChange={handleChangeOnAmount}
+                />
+                <material.Button
+                  sx={{ ml: 3 }}
+                  variant="contained"
+                  onClick={approveToken}
+                >
+                  Click
+                </material.Button>
+              </material.Card>
               <material.Button
                 fullWidth
                 size="large"
@@ -252,7 +259,7 @@ const Page = () => {
                 onClick={checkAllowance}
               >
                 {/* // TODO:Change state by queyring contract */}
-                Check Allowance Token, Current Approved Amount: {Amount}
+                Check Allowance Token
               </material.Button>
               <material.Button
                 fullWidth
@@ -262,7 +269,7 @@ const Page = () => {
                 onClick={fundWithCCIP}
               >
                 {/* // TODO:Change state by queyring contract */}
-                Funding: {Amount}
+                Funding: {inputAmount}
               </material.Button>
             </material.CardContent>
           </material.Card>
