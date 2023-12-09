@@ -13,6 +13,10 @@ import Web3 from "web3";
 
 function maskAddress(address: string): string {
   // For example, display only the first 6 and last 4 characters
+  console.log(address);
+  if(address == '' || address == null){
+    return;
+  }
   const masked: string = `${address.substring(0, 6)}...${address.slice(-4)}`;
   return masked;
 }
@@ -183,3 +187,7 @@ function WalletButton(): JSX.Element {
 }
 
 export default WalletButton;
+function logout() {
+  throw new Error("Function not implemented.");
+}
+

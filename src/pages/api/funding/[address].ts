@@ -20,7 +20,20 @@ export default async function handler(
     } else {
       const { address } = req.query;
       const [rows]: any = await pool.query(
-        "SELECT p.*, SUM(f.amount) as amount FROM project p JOIN funding f ON p.id = f.project_id WHERE f.address = ? GROUP BY f.project_id",
+        "SELECT " +
+        " p.*, " +
+        " p.id, " +
+        " p.title, " +
+        " p.desc, " +
+        " p.writer, " +
+        " p.goal, " +        
+        " DATE_FORMAT(p.start_date, '%Y-%m-%d') AS start_date, " +
+        " DATE_FORMAT(p.end_date, '%Y-%m-%d') AS end_date, " +
+        " SUM(f.amount) as amount " +
+        " FROM project p JOIN funding f " +
+        " ON p.id = f.project_id " +
+        " WHERE f.address = ? " +
+        " GROUP BY f.project_id",
         [address]
       );
       res.status(200).json({ projects: rows });
