@@ -38,6 +38,7 @@ export default function SimpleDialog(props: SimpleDialogProps) {
   const [tokenAmount, setTokenAmount] = useState("0");
   const [ethAmount, setEthAmount] = useState("0");
   const [avaxAmount, setAvaxAmount] = useState("0");
+  const [bnbAmount, setBnbAmount] = useState("0");
   const [selectChain, setSelectChain] = useState("");
   const [openOuterDialog, setOpenOuterDialog] = useState(false);
   const [openInnerDialog, setOpenInnerDialog] = useState(false);
@@ -69,6 +70,8 @@ export default function SimpleDialog(props: SimpleDialogProps) {
       setTokenAmount(avaxAmount);
     } else if (selectChain === "Sepolia") {
       setTokenAmount(ethAmount);
+    } else if (selectChain === "Bnb") {
+      setTokenAmount(bnbAmount);
     }
     setOpenInnerDialog(true);
   };
@@ -91,8 +94,8 @@ export default function SimpleDialog(props: SimpleDialogProps) {
       }
 
       // TODO: change to input? in async (networkName:string)
-      const networkName: string = selectChain.toLowerCase();
-      const infuraSepoliaURL = process.env.NEXT_PUBLIC_ALCHEMY_SEPOLIA_URL;
+      
+      const networkName: string = selectChain.toLowerCase();      
 
       // chain type check
       if(await getCurChainId() !== networks[networkName].chainId){
@@ -118,7 +121,7 @@ export default function SimpleDialog(props: SimpleDialogProps) {
       );
         console.log("toWei : " + utils.toWei(inputValue, "ether"));
       // Approve the spender
-      const tx = await erc20Contract.approve(signer, utils.toWei(inputValue, "ether"));
+      const tx = await erc20Contract.approve(fundingContractAddress, utils.toWei(inputValue, "ether"));
       //const tx = await erc20Contract.approve(fundingContractAddress, 20000);
       await tx.wait();
 
@@ -190,7 +193,7 @@ export default function SimpleDialog(props: SimpleDialogProps) {
       console.log(receipt);
       console.log(receipt.events);
 
-      await getTransactionReceipt(receipt.transactionHash);
+      const messageId = await getTransactionReceipt(receipt.hash);
       alert("Fund Success");
 
       const currentUrl = window.location.href;
@@ -201,7 +204,8 @@ export default function SimpleDialog(props: SimpleDialogProps) {
         projectId : projectId,
         address : window.ethereum.selectedAddress,
         amount : inputValue,
-        chain : selectChain
+        chain : selectChain,
+        messageId : messageId,
       }
       try {
         axios
@@ -222,7 +226,7 @@ export default function SimpleDialog(props: SimpleDialogProps) {
       }
       getTokenAmountBySepolia();
       getTokenAmountByFuji();
-
+      getTokenAmountByBsc();
     } catch (error) {
       console.error("Error CCIP :", error);
       alert("Error transferring tokens. Check the console for details.");
@@ -235,25 +239,33 @@ export default function SimpleDialog(props: SimpleDialogProps) {
   
 const getTransactionReceipt = async (transactionHash:string) => {
   try {   
-    let provider:any = null;
-    if(selectChain == 'Fuji'){
-      const infuraAvaxURL = process.env.NEXT_PUBLIC_INFURA_AVAX;
-      provider = new Web3(
-        new Web3.providers.HttpProvider(infuraAvaxURL ?? "")
-      );
-    }else if(selectChain == 'Sepolia'){
-      const alchemySepoliaURL = process.env.NEXT_PUBLIC_ALCHEMY_SEPOLIA;
-      provider = new Web3(
-        new Web3.providers.HttpProvider(alchemySepoliaURL ?? "")
-      );
-    }
+    let provider:any = new Web3(window.ethereum);
+    // if(selectChain == 'Fuji'){
+    //   const infuraAvaxURL = process.env.NEXT_PUBLIC_INFURA_AVAX;
+    //   provider = new Web3(
+    //     new Web3.providers.HttpProvider(infuraAvaxURL ?? "")
+    //   );
+    // }else if(selectChain == 'Sepolia'){
+    //   const alchemySepoliaURL = process.env.NEXT_PUBLIC_ALCHEMY_SEPOLIA;
+    //   provider = new Web3(
+    //     new Web3.providers.HttpProvider(alchemySepoliaURL ?? "")
+    //   );
+    // }else if(selectChain == 'Bnb'){
+    //   const alchemySepoliaURL = process.env.NEXT_PUBLIC_ALCHEMY_SEPOLIA;
+    //   provider = new Web3(
+    //     new Web3.providers.HttpProvider(alchemySepoliaURL ?? "")
+    //   );
+    // }
+    
 
     const receipt:any = await provider.eth.getTransactionReceipt(transactionHash);
     console.log('Transaction Receipt:', receipt);
     const messageId = receipt.logs[receipt.logs.length -1].topics[1];
     console.log(`https://ccip.chain.link/msg/${messageId}`)
+    return messageId;
   } catch (error) {
     console.error('Error fetching transaction receipt:', error);
+    return '';
   }
 }
 
@@ -337,11 +349,49 @@ const getTransactionReceipt = async (transactionHash:string) => {
     setAvaxAmount(formattedResult.substring(0,5));
   };
 
+  const getTokenAmountByBsc = async () => {
+ 
+    const bscURL = 'https://data-seed-prebsc-1-s1.binance.org:8545';
+    const bsc = new Web3(
+      new Web3.providers.HttpProvider(bscURL ?? "")
+    );
+
+    // DAI token contract
+    const tokenContract = "0xbFA2ACd33ED6EEc0ed3Cc06bF1ac38d22b36B9e9";
+    // A DAI token holder
+    const tokenHolder = window.ethereum.selectedAddress;
+    const contract = new bsc.eth.Contract(Erc20TokenContract, tokenContract);
+
+    const result = await (contract.methods as any)
+      .balanceOf(tokenHolder)
+      .call();
+      console.log(result);
+      
+    const formattedResult = Utils.formatUnits(result, "ether");
+    //console.log();
+
+    // Removing the '0x' prefix
+    // const cleanedHex = balances.tokenBalances[0].tokenBalance?.slice(2);
+
+    // 16진수를 10진수로 변환
+    //const decimalValue = BigInt('0x' + cleanedHex);
+
+    // wei에서 ether로 변환
+    //const etherValue = web3.utils.fromWei(decimalValue.toString(), 'ether');
+
+    console.log("Bsc Testnet Token Balances: " + formattedResult.substring(0,5));
+    //const etherValue = web3.utils.fromWei(parseInt(balances.tokenBalances.tokenBalance, 16), 'ether');
+    //console.log(etherValue);
+
+    setBnbAmount(formattedResult.substring(0,5));
+  };
+
   useEffect(() => {
     const isConnect = localStorage.getItem('isConnect');
     if(isConnect == 'true'){
       getTokenAmountBySepolia();
       getTokenAmountByFuji();
+      getTokenAmountByBsc();
     }
    
   }, []);
@@ -374,6 +424,20 @@ const getTransactionReceipt = async (transactionHash:string) => {
               </ListItemAvatar>
               <ListItemText
                 primary={`Sepolia 보유 BNM 수량 : ${ethAmount} CCIP-BnM`}
+              />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disableGutters>
+            <ListItemButton
+              onClick={() => handleOpenInnerDialog("Bnb")}
+            >
+              <ListItemAvatar>
+                <Avatar sx={{width:70, height:50, marginLeft:-2}} src="/assets/images/binance-smart-chain-bsc-seeklogo.com.svg">
+                  <PersonIcon />
+                </Avatar>
+              </ListItemAvatar>
+              <ListItemText
+                primary={`Bsc Testnet 보유 BNM 수량 : ${bnbAmount} CCIP-BnM`}
               />
             </ListItemButton>
           </ListItem>

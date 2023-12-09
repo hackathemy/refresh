@@ -74,7 +74,7 @@ export const FundingHistory = () => {
                     <TableCell>{funding.fund_date}</TableCell>
                     <TableCell>
                       <Link
-                        href={`https://ccip.chain.link/msg/0xdfcd24985af75ee603013f35a6eef92369132f7d62be898c6f0903e8ed11daf9`}
+                        href={`https://ccip.chain.link/msg/${funding.message_id}`}
                         target="_blank"
                       >
                         <Chip

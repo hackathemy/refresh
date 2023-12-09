@@ -78,7 +78,7 @@ const networks: Networks = {
   bnb: {
     chainName: "BNB Testnet",
     chainId: 97,
-    chainId16: "0x13881",
+    chainId16: "0x61",
     decimal: 18,
     nativeCurrencySymbol: "tBNB",
     rpcURL: "https://data-seed-prebsc-1-s1.bnbchain.org:8545",

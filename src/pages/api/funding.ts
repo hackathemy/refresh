@@ -13,9 +13,10 @@ export default async function handler(
         "address, " +
         "amount,  " +
         "chain, " +
+        "message_id, " +
         "DATE_FORMAT(fund_date, '%Y-%m-%d') AS fund_date, " +
         "( select title from project where id = f.project_id ) as project_title" +
-        " FROM funding f ORDER BY fund_date DESC"
+        " FROM funding f ORDER BY id DESC"
     );
     res.status(200).json({ fundingList: rows });
   } catch (error) {

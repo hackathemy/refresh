@@ -7,10 +7,10 @@ export default async function handler(
 ) {
   try {
     if (req.method == "POST") {
-      const { projectId, address, amount, chain } = req.body;
+      const { projectId, address, amount, chain, messageId } = req.body;
       const result = await pool.query(
-        "INSERT INTO funding (project_id, address, amount, fund_date, chain) VALUES (?, ?, ?, ?, ?)",
-        [projectId, address, amount, new Date(), chain]
+        "INSERT INTO funding (project_id, address, amount, fund_date, chain, message_id) VALUES (?, ?, ?, ?, ?, ?)",
+        [projectId, address, amount, new Date(), chain, messageId]
       );
 
       res.status(200).json({
