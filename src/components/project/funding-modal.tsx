@@ -28,27 +28,27 @@ const emails = ["ETH Sepolia", "Avax"];
 
 export interface SimpleDialogProps {
   open: boolean;
-  selectedValue: string;
+
   onClose: (value: string) => void;
 }
 
 export default function SimpleDialog(props: SimpleDialogProps) {
   //const [account, web3] = useWeb3();
-  const { onClose, selectedValue, open } = props;
+  const { onClose,  open } = props;
   const [tokenAmount, setTokenAmount] = useState("0");
   const [ethAmount, setEthAmount] = useState("0");
   const [avaxAmount, setAvaxAmount] = useState("0");
   const [selectChain, setSelectChain] = useState("");
   const [openOuterDialog, setOpenOuterDialog] = useState(false);
   const [openInnerDialog, setOpenInnerDialog] = useState(false);
-  const [inputValue, setInputValue] = useState("0");
+  const [inputValue, setInputValue] = useState('0');
 
-  const handleInputChange = (event: any) => {
+  const handleInputChange = (event:any) => {
     setInputValue(event.target.value);
   };
 
   const handleClose = () => {
-    onClose(selectedValue);
+    onClose('');
   };
 
   const handleOpenOuterDialog = () => {
@@ -78,31 +78,26 @@ export default function SimpleDialog(props: SimpleDialogProps) {
   };
 
   const handleListItemClick = async (value: string) => {
+
     onClose(value);
   };
 
+
   const approveToken = async () => {
-    alert("approve");
     try {
       // TODO: we need to add failure logic
       if (!window.ethereum) {
         return;
       }
 
-      // TODO: check this network id or name and should not be set polygon network.
-      // const networkId = await window.ethereum.request({
-      // method: "net_version",
-      // });
-      // console.log("Connected Network ID:", networkId);
-
       // TODO: change to input? in async (networkName:string)
       const networkName: string = selectChain.toLowerCase();
       const infuraSepoliaURL = process.env.NEXT_PUBLIC_ALCHEMY_SEPOLIA_URL;
 
       // chain type check
-      if ((await getCurChainId()) !== networks[networkName].chainId) {
+      if(await getCurChainId() !== networks[networkName].chainId){
         await window.ethereum.request({
-          method: "wallet_switchEthereumChain",
+          method: 'wallet_switchEthereumChain',
           // 0x13881 == 80001 == polygon testnet chain ID
           params: [{ chainId: networks[networkName].chainId16 }],
         });
@@ -121,19 +116,15 @@ export default function SimpleDialog(props: SimpleDialogProps) {
         ["function approve(address spender, uint256 amount)"],
         signer
       );
-      console.log("toWei : " + utils.toWei(inputValue, "ether"));
+        console.log("toWei : " + utils.toWei(inputValue, "ether"));
       // Approve the spender
-      const tx = await erc20Contract.approve(
-        signer,
-        utils.toWei(inputValue, "ether")
-      );
+      const tx = await erc20Contract.approve(signer, utils.toWei(inputValue, "ether"));
       //const tx = await erc20Contract.approve(fundingContractAddress, 20000);
       await tx.wait();
 
       // TODO: change to temprary modal for ux
       // TODO: wait for a while for confirming tx in the network
       console.log("Transaction Hash:", tx);
-      alert("Transfer successful!");
       await fundWithCCIP();
     } catch (error) {
       console.error("Error approving spender:", error);
@@ -143,7 +134,7 @@ export default function SimpleDialog(props: SimpleDialogProps) {
 
   const fundWithCCIP = async () => {
     console.log("fundWIthCCIP");
-
+    
     try {
       // TODO: we need to add failure logic
       if (!window.ethereum) {
@@ -160,7 +151,7 @@ export default function SimpleDialog(props: SimpleDialogProps) {
       const erc20ContractAddress = networks[networkName].bnmToken;
       const PROTOCOL_ADDRESS = `0x8edbc869108da99f6feb062136bc7d7aa5764542`;
       // Gas options
-      const gasPrice = utils.toWei("50", "gwei");
+      const gasPrice = utils.toWei('50', 'gwei');
       const gasLimit = 1000000;
       // create a contract instance
       const fundingContract = new ethers.Contract(
@@ -175,15 +166,17 @@ export default function SimpleDialog(props: SimpleDialogProps) {
         ],
         signer
       );
-
+  
       // Approve the spender
       const tx = await fundingContract.sendMessagePayLINK(
         PROTOCOL_ADDRESS, // receive address = polygon protocol address
         1, // project index
         erc20ContractAddress, // token
-        20000,
-        //utils.toWei(inputValue, "wei"), // amount
-        { gasPrice: gasPrice, gasLimit: gasLimit }
+        //20000,
+        utils.toWei(inputValue, "ether"), // amount
+        { gasPrice: gasPrice,
+          gasLimit: gasLimit
+        } 
       );
 
       const receipt = await tx.wait();
@@ -197,160 +190,88 @@ export default function SimpleDialog(props: SimpleDialogProps) {
       console.log(receipt);
       console.log(receipt.events);
 
-      // Find the "MessageSent" event in the transaction logs
-      const messageSentEvent = receipt.events.find(
-        (event: Event) => event.event === "MessageSent"
-      );
+      await getTransactionReceipt(receipt.transactionHash);
+      alert("Fund Success");
 
-      if (messageSentEvent) {
-        // Access the return value from the event
-        const messageId = messageSentEvent.args.messageId;
-        console.log("Message ID:", messageId);
-        alert(`https://ccip.chain.link/msg/${messageId}`);
-      } else {
-        console.error("MessageSent event not found in transaction logs");
+      const currentUrl = window.location.href;
+      console.log(currentUrl);
+      const projectId = currentUrl.substring(currentUrl.lastIndexOf("/")+1);
+      console.log(projectId);
+      const values = {
+        projectId : projectId,
+        address : window.ethereum.selectedAddress,
+        amount : inputValue,
+        chain : selectChain
       }
+      try {
+        axios
+          .post("/api/funding/" + projectId, values)
+          .then(async function (response) {
+            if (response.status === 200) {
+              console.log("success");                               
+            } else {
+              console.error(JSON.stringify(response.data));
+            }
+          })
+          .catch(function (error: any) {
+            console.error(JSON.stringify(error));
+          })
+          .finally(() => {});
+      } catch (err: any) {
+        console.log(err.message);
+      }
+      getTokenAmountBySepolia();
+      getTokenAmountByFuji();
+
     } catch (error) {
       console.error("Error CCIP :", error);
       alert("Error transferring tokens. Check the console for details.");
     }
-  };
-
-  const getTransactionLog = async (txHash: string) => {
-    try {
-      const response = await axios.get(
-        `https://api.etherscan.io/api?module=logs&action=getLogs&txhash=${txHash}`
-      );
-
-      const logs = response.data.result;
-      // 여기서 logs를 적절히 처리하고 messageid를 얻어내세요.
-      console.log(logs);
-    } catch (error) {
-      console.error("Error fetching transaction logs:", error);
-    }
-  };
-
-  const getTransactionReceipt = async () => {
-    try {
-      const infuraUrl = "https://api.avax.network/ext/bc/C/rpc"; // Avalanche C-Chain Infura endpoint
-      const web3 = new Web3(infuraUrl);
-
-      const infuraAvaxURL = process.env.NEXT_PUBLIC_INFURA_AVAX;
-      const infura = new Web3(
-        new Web3.providers.HttpProvider(infuraAvaxURL ?? "")
-      );
-
-      const transactionHash =
-        "0x7e70b931e6720c28906e4140f77b052cc2234b3b9b71f45ad0c144987050a3b5";
-
-      const receipt: any = await infura.eth.getTransactionReceipt(
-        transactionHash
-      );
-      console.log("Transaction Receipt:", receipt);
-      const messageId = receipt?.logs[receipt.logs.length - 1].topics[1];
-      console.log(`https://ccip.chain.link/msg/${messageId}`);
-    } catch (error) {
-      console.error("Error fetching transaction receipt:", error);
-    }
-  };
-
-  const getCurChainId = async () => {
-    const eth = window.ethereum as MetaMaskInpageProvider;
-    const curChainId = await eth.request({
-      method: "eth_chainId",
-    });
-    console.log("curChainId : " + curChainId);
-    return curChainId;
-  };
-
-  const sendCCIP = async () => {
-    console.log(selectChain);
-    const infuraSepoliaURL = process.env.NEXT_PUBLIC_ALCHEMY_SEPOLIA_URL;
-    const infura = new Web3(
-      new Web3.providers.HttpProvider(infuraSepoliaURL ?? "")
-    );
-
-    const contractAddress = "0x18921Ba7EB599DA91C9A382a618f2f523Cde15c2"; // Matic 토큰 컨트랙트 주소
-    const contractAbi = TokenContract; // 전송 함수에 대한 ABI
-    const contract = new infura.eth.Contract(contractAbi, contractAddress);
-
-    // 메서드의 인자 값 설정
-    const destinationChainSelector = 12532609583862916517;
-    const receiver = "0x9F70C778aD5A738beFD577f12e6e9C1Bc9fBfd48";
-    const text = "sm test";
-    const token = "0xFd57b4ddBf88a4e07fF4e34C487b99af2Fe82a05";
-    const amount = infura.utils.toWei("0.1", "ether");
-
-    // Contract 메서드 호출 데이터 생성
-    const data = (contract.methods as any)
-      .sendMessagePayLINK(
-        //destinationChainSelector,
-        receiver,
-        text,
-        token,
-        amount
-      )
-      .encodeABI();
-
-    // 트랜잭션 객체 생성
-    const transactionObject = {
-      from: window.ethereum.selectedAddress,
-      to: contractAddress,
-      gas: "200000", // 예상 가스 비용
-      data: data,
-    };
-
-    console.log(transactionObject);
-
-    // MetaMask로 트랜잭션 전송 요청
-    window.ethereum
-      .request({
-        method: "eth_sendTransaction",
-        params: [transactionObject],
-      })
-      .then((txHash: any) => {
-        console.log("Transaction Hash:", txHash);
-
-        const currentUrl = window.location.href;
-        console.log(currentUrl);
-        const projectId = currentUrl.substring(currentUrl.lastIndexOf("/") + 1);
-        console.log(projectId);
-        const values = {
-          projectId: projectId,
-          address: window.ethereum.selectedAddress,
-          amount: inputValue,
-          chain: selectChain,
-        };
-        try {
-          axios
-            .post("/api/funding/" + projectId, values)
-            .then(async function (response) {
-              if (response.status === 200) {
-                console.log("success");
-              } else {
-                console.error(JSON.stringify(response.data));
-              }
-            })
-            .catch(function (error: any) {
-              console.error(JSON.stringify(error));
-            })
-            .finally(() => {});
-        } catch (err: any) {
-          console.log(err.message);
-        }
-        getTokenAmountByCCIP();
-        getTokenAmount2ByCCIP();
-      })
-      .catch((error: any) => {
-        console.error("Transaction Error:", error);
-      });
 
     setOpenInnerDialog(false);
     setOpenOuterDialog(false);
     onClose("close");
   };
+  
+const getTransactionReceipt = async (transactionHash:string) => {
+  try {   
+    let provider:any = null;
+    if(selectChain == 'Fuji'){
+      const infuraAvaxURL = process.env.NEXT_PUBLIC_INFURA_AVAX;
+      provider = new Web3(
+        new Web3.providers.HttpProvider(infuraAvaxURL ?? "")
+      );
+    }else if(selectChain == 'Sepolia'){
+      const alchemySepoliaURL = process.env.NEXT_PUBLIC_ALCHEMY_SEPOLIA;
+      provider = new Web3(
+        new Web3.providers.HttpProvider(alchemySepoliaURL ?? "")
+      );
+    }
 
-  const getTokenAmountByCCIP = async () => {
+    const receipt:any = await provider.eth.getTransactionReceipt(transactionHash);
+    console.log('Transaction Receipt:', receipt);
+    const messageId = receipt.logs[receipt.logs.length -1].topics[1];
+    console.log(`https://ccip.chain.link/msg/${messageId}`)
+  } catch (error) {
+    console.error('Error fetching transaction receipt:', error);
+  }
+}
+
+
+  const getCurChainId = async () => {
+    const eth = window.ethereum as MetaMaskInpageProvider;
+    const curChainId = await eth.request({
+      method: 'eth_chainId',
+    });
+    console.log("curChainId : " + curChainId);
+    return curChainId;
+  };
+
+
+  
+
+  const getTokenAmountBySepolia = async () => {
+   
     const sepoliaSettings = {
       apiKey: process.env.NEXT_PUBLIC_ALCHEMY_SEPOLIA, // Replace with your Alchemy API Key.
       network: Network.ETH_SEPOLIA, // Replace with your network.
@@ -379,14 +300,15 @@ export default function SimpleDialog(props: SimpleDialogProps) {
     setEthAmount(etherValue);
   };
 
-  const getTokenAmount2ByCCIP = async () => {
+  const getTokenAmountByFuji = async () => {
+ 
     const infuraAvaxURL = process.env.NEXT_PUBLIC_INFURA_AVAX;
     const infura = new Web3(
       new Web3.providers.HttpProvider(infuraAvaxURL ?? "")
     );
 
     // DAI token contract
-    const tokenContract = "0x0b9d5D9136855f6FEc3c0993feE6E9CE8a297846";
+    const tokenContract = "0xD21341536c5cF5EB1bcb58f6723cE26e8D8E90e4";
     // A DAI token holder
     const tokenHolder = window.ethereum.selectedAddress;
     const contract = new infura.eth.Contract(Erc20TokenContract, tokenContract);
@@ -394,6 +316,8 @@ export default function SimpleDialog(props: SimpleDialogProps) {
     const result = await (contract.methods as any)
       .balanceOf(tokenHolder)
       .call();
+      console.log(result);
+      
     const formattedResult = Utils.formatUnits(result, "ether");
     //console.log();
 
@@ -406,19 +330,20 @@ export default function SimpleDialog(props: SimpleDialogProps) {
     // wei에서 ether로 변환
     //const etherValue = web3.utils.fromWei(decimalValue.toString(), 'ether');
 
-    console.log("AVAX Token Balances: " + formattedResult);
+    console.log("AVAX Token Balances: " + formattedResult.substring(0,5));
     //const etherValue = web3.utils.fromWei(parseInt(balances.tokenBalances.tokenBalance, 16), 'ether');
     //console.log(etherValue);
 
-    setAvaxAmount(formattedResult);
+    setAvaxAmount(formattedResult.substring(0,5));
   };
 
   useEffect(() => {
-    const isConnect = localStorage.getItem("isConnect");
-    if (isConnect == "true") {
-      getTokenAmountByCCIP();
-      getTokenAmount2ByCCIP();
+    const isConnect = localStorage.getItem('isConnect');
+    if(isConnect == 'true'){
+      getTokenAmountBySepolia();
+      getTokenAmountByFuji();
     }
+   
   }, []);
 
   return (
@@ -439,7 +364,9 @@ export default function SimpleDialog(props: SimpleDialogProps) {
             </ListItemButton>
           </ListItem>
           <ListItem disableGutters>
-            <ListItemButton onClick={() => handleOpenInnerDialog("Sepolia")}>
+            <ListItemButton
+              onClick={() => handleOpenInnerDialog("Sepolia")}
+            >
               <ListItemAvatar>
                 <Avatar src="/assets/images/eth-diamond-black-white.jpg">
                   <PersonIcon />
@@ -469,8 +396,8 @@ export default function SimpleDialog(props: SimpleDialogProps) {
               id="outlined-basic"
               label="CCIP-BnM 수량 입력"
               variant="outlined"
-              sx={{ marginTop: 2 }}
-              value={inputValue} //
+              sx={{marginTop:2,}}
+              value={inputValue} // 
               onChange={handleInputChange} // inp
             />
             <Divider />
