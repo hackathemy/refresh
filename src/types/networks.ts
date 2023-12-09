@@ -75,6 +75,23 @@ const networks: Networks = {
     bnmToken: "0xd21341536c5cf5eb1bcb58f6723ce26e8d8e90e4",
     fundingContract: "NOT DEFINED",
   },
+  bnb: {
+    chainName: "BNB Testnet",
+    chainId: 97,
+    chainId16: "0x13881",
+    decimal: 18,
+    nativeCurrencySymbol: "tBNB",
+    rpcURL: "https://data-seed-prebsc-1-s1.bnbchain.org:8545",
+    blockExplorerURL: "https://testnet.bscscan.com",
+
+    explorer: (txHash) => `https://testnet.bscscan.com/tx/${txHash}`,
+
+    chainSelector: "13264668187771770619",
+    router: "0x9527e2d01a3064ef6b50c1da1c0cc523803bcff2",
+    linkToken: "0x84b9B910527Ad5C03A9Ca831909E21e236EA7b06",
+    bnmToken: "0xbfa2acd33ed6eec0ed3cc06bf1ac38d22b36b9e9",
+    fundingContract: "0x337A02e1757E66084820E7c7bB6ef99c7bbf7D0C",
+  },
 };
 
 export { networks };
