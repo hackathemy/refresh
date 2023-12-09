@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { TrophyIcon, FaceSmileIcon } from "@heroicons/react/24/solid";
+import VotingDialog from "../modal/voting-modal";
 
 export const DaoCard = ({ dao }: any) => {
   const itKeywords = [
@@ -28,6 +29,11 @@ export const DaoCard = ({ dao }: any) => {
     "network",
   ];
 
+  const [open, setOpen] = useState(false);
+
+  const handleClose = () => {
+    setOpen(false);
+  };
   const [progress, setProgress] = useState(0);
   const [buffer, setBuffer] = useState(10);
 
@@ -101,53 +107,52 @@ export const DaoCard = ({ dao }: any) => {
             </Typography>
           </Box>
         </CardContent>
-        <Box sx={{ flexGrow: 1 }} />
-        <Divider />
-        <Stack
-          alignItems="center"
-          direction="row"
-          justifyContent="space-between"
-          spacing={2}
-          sx={{ mr: 3 }}
-        >
-          <Stack justifyContent="space-between" spacing={2} sx={{ p: 3 }}>
-            <Stack alignItems="center" direction="row" spacing={1}>
-              <SvgIcon color="action" fontSize="small">
-                <TrophyIcon />
-              </SvgIcon>
-              <Typography
-                display="inline"
-                variant="body2"
-                color="text.secondary"
-              >
-                Total
-              </Typography>
-              <Typography display="inline" variant="subtitle2">
-                {dao.goal} CCIP-BnM
-              </Typography>
-            </Stack>
-            <Stack alignItems="center" direction="row" spacing={1}>
-              <SvgIcon color="action" fontSize="small">
-                <FaceSmileIcon />
-              </SvgIcon>
-              <Typography
-                display="inline"
-                variant="body2"
-                color="text.secondary"
-              >
-                My funding
-              </Typography>
-              <Typography display="inline" variant="subtitle2">
-                {dao.amount ?? 0} CCIP-BnM
-              </Typography>
-            </Stack>
-          </Stack>
-
-          <Button size="large" sx={{ mt: 3 }} variant="contained">
-            Execution Fund
-          </Button>
-        </Stack>
       </CardActionArea>
+      <Box sx={{ flexGrow: 1 }} />
+      <Divider />
+      <Stack
+        alignItems="center"
+        direction="row"
+        justifyContent="space-between"
+        spacing={2}
+        sx={{ mr: 3 }}
+      >
+        <Stack justifyContent="space-between" spacing={2} sx={{ p: 3 }}>
+          <Stack alignItems="center" direction="row" spacing={1}>
+            <SvgIcon color="action" fontSize="small">
+              <TrophyIcon />
+            </SvgIcon>
+            <Typography display="inline" variant="body2" color="text.secondary">
+              Total
+            </Typography>
+            <Typography display="inline" variant="subtitle2">
+              {dao.goal} CCIP-BnM
+            </Typography>
+          </Stack>
+          <Stack alignItems="center" direction="row" spacing={1}>
+            <SvgIcon color="action" fontSize="small">
+              <FaceSmileIcon />
+            </SvgIcon>
+            <Typography display="inline" variant="body2" color="text.secondary">
+              My funding
+            </Typography>
+            <Typography display="inline" variant="subtitle2">
+              {dao.amount ?? 0} CCIP-BnM
+            </Typography>
+          </Stack>
+        </Stack>
+
+        <Button
+          size="large"
+          sx={{ mt: 3 }}
+          variant="contained"
+          onClick={() => setOpen(true)}
+        >
+          Execution Fund
+        </Button>
+      </Stack>
+
+      <VotingDialog open={open} onClose={handleClose} />
     </Card>
   );
 };

@@ -9,15 +9,6 @@ import { SvgIcon } from "@mui/material";
 
 export const items = [
   {
-    title: "RE-fresh !?",
-    path: "/",
-    icon: (
-      <SvgIcon fontSize="small">
-        <LifebuoyIcon />
-      </SvgIcon>
-    ),
-  },
-  {
     title: "Projects",
     path: "/project",
     icon: (
@@ -45,11 +36,20 @@ export const items = [
     ),
   },
   {
-    title: "Create",
-    path: "/create",
+    title: "My Project",
+    path: "/my",
     icon: (
       <SvgIcon fontSize="small">
-        <PlusCircleIcon />
+        <UserGroupIcon />
+      </SvgIcon>
+    ),
+  },
+  {
+    title: "[DEV] Flow Test",
+    path: "/test",
+    icon: (
+      <SvgIcon fontSize="small">
+        <UserGroupIcon />
       </SvgIcon>
     ),
   },

@@ -53,8 +53,8 @@ export default function Home() {
       url: "https://",
     },
     {
-      title: "Refresh Contract Explorer (CCIP)",
-      url: "https://",
+      title: "Refresh Polygon ID Implementation",
+      url: "https://github.com/hackathemy/polygon-id",
     },
     {
       title: "Refresh Contract Explorer (CCIP)",
@@ -113,7 +113,7 @@ export default function Home() {
                   component="h2"
                   sx={{ mt: 2 }}
                 >
-                  Projects
+                  Funding Project
                 </Typography>
               </CardContent>
             </Card>
@@ -128,7 +128,7 @@ export default function Home() {
             >
               <CardContent sx={{ flexGrow: 1 }}>
                 <Typography variant="h2">
-                  $ {(stats as any)?.fundingAmount}
+                  {(stats as any)?.fundingAmount}
                 </Typography>
                 <Typography
                   gutterBottom
@@ -136,7 +136,7 @@ export default function Home() {
                   component="h2"
                   sx={{ mt: 2 }}
                 >
-                  Funding Amount
+                  Funding CCIP-BnM
                 </Typography>
               </CardContent>
             </Card>
@@ -159,7 +159,7 @@ export default function Home() {
                   component="h2"
                   sx={{ mt: 2 }}
                 >
-                  Transactions
+                  Funding Count
                 </Typography>
               </CardContent>
             </Card>
@@ -257,8 +257,12 @@ export default function Home() {
         <Typography gutterBottom variant="h4">
           Architecture
         </Typography>
-
-        <img width="100%" src="/assets/images/flow.png" />
+        <a
+          href="https://refresh.hackathemy.me/assets/images/flow.png"
+          target="_blank"
+        >
+          <img width="100%" src="/assets/images/flow.png" />
+        </a>
       </Container>
       <Container sx={{ py: 6 }} maxWidth="md">
         <Typography gutterBottom variant="h4">

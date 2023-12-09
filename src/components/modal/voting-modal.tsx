@@ -26,15 +26,14 @@ import { networks } from "@/types/networks";
 import { MetaMaskInpageProvider } from "@metamask/providers";
 const emails = ["ETH Sepolia", "Avax"];
 
-export interface SimpleDialogProps {
+export interface IVotingDialogProps {
   open: boolean;
-  selectedValue: string;
-  onClose: (value: string) => void;
+  onClose: () => void;
 }
 
-export default function SimpleDialog(props: SimpleDialogProps) {
+export default function VotingDialog(props: IVotingDialogProps) {
   //const [account, web3] = useWeb3();
-  const { onClose, selectedValue, open } = props;
+  const { onClose, open } = props;
   const [tokenAmount, setTokenAmount] = useState("0");
   const [ethAmount, setEthAmount] = useState("0");
   const [avaxAmount, setAvaxAmount] = useState("0");
@@ -48,7 +47,7 @@ export default function SimpleDialog(props: SimpleDialogProps) {
   };
 
   const handleClose = () => {
-    onClose(selectedValue);
+    onClose();
   };
 
   const handleOpenOuterDialog = () => {
@@ -78,7 +77,7 @@ export default function SimpleDialog(props: SimpleDialogProps) {
   };
 
   const handleListItemClick = async (value: string) => {
-    onClose(value);
+    onClose();
   };
 
   const approveToken = async () => {
@@ -347,7 +346,7 @@ export default function SimpleDialog(props: SimpleDialogProps) {
 
     setOpenInnerDialog(false);
     setOpenOuterDialog(false);
-    onClose("close");
+    onClose();
   };
 
   const getTokenAmountByCCIP = async () => {
