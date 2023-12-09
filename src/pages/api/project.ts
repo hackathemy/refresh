@@ -7,7 +7,8 @@ export default async function handler(
 ) {
   try {
     if (req.method == "POST") {
-      const { title, desc, goal, writer, duration, tokenName, tokenSymbol } = req.body;
+      const { title, desc, goal, writer, duration, tokenName, tokenSymbol } =
+        req.body;
       const result = await pool.query(
         "INSERT INTO project (title, `desc`, goal, writer, start_date, end_date, token_name, token_symbol) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
         [
@@ -18,7 +19,7 @@ export default async function handler(
           new Date(),
           new Date(new Date().setDate(new Date().getDate() + duration)),
           tokenName,
-          tokenSymbol
+          tokenSymbol,
         ]
       );
 
