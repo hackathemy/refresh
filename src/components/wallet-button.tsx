@@ -10,7 +10,9 @@ import { useWeb3 } from "@/hooks/useWeb3";
 import TokenContract from "../../public/assets/abi/sender_abi.json";
 import { MetaMaskInpageProvider } from "@metamask/providers";
 import Web3 from "web3";
+
 import { maskAddress } from "@/functions/string-functions";
+
 
 function WalletButton(): JSX.Element {
   //const [account, web3] = useWeb3();
@@ -179,3 +181,7 @@ function WalletButton(): JSX.Element {
 }
 
 export default WalletButton;
+function logout() {
+  throw new Error("Function not implemented.");
+}
+

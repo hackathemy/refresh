@@ -14,13 +14,16 @@ import Typography from "@mui/material/Typography";
 import { blue } from "@mui/material/colors";
 import { Alchemy, Network, Utils } from "alchemy-sdk";
 import { useEffect, useState } from "react";
-import Web3 from "web3";
+import Web3, { utils } from "web3";
 import TokenContract from "../../../public/assets/abi/sender_abi.json";
 import Erc20TokenContract from "../../../public/assets/abi/erc20_abi.json";
 import { useWeb3 } from "@/hooks/useWeb3";
 import { DialogContent, Divider, TextField } from "@mui/material";
 import axios from "axios";
 import { useRouter } from "next/router";
+import { ethers } from "ethers";
+import { networks } from "@/types/networks";
+import { MetaMaskInpageProvider } from "@metamask/providers";
 const emails = ["ETH Sepolia", "Avax"];
 
 export interface SimpleDialogProps {
@@ -62,9 +65,9 @@ export default function SimpleDialog(props: SimpleDialogProps) {
 
   const handleOpenInnerDialog = (selectChain: string) => {
     setSelectChain(selectChain);
-    if (selectChain === "AVAX/Fuji") {
+    if (selectChain === "Fuji") {
       setTokenAmount(avaxAmount);
-    } else if (selectChain === "ETH/Sepolia") {
+    } else if (selectChain === "Sepolia") {
       setTokenAmount(ethAmount);
     }
     setOpenInnerDialog(true);
@@ -78,6 +81,188 @@ export default function SimpleDialog(props: SimpleDialogProps) {
 
     onClose(value);
   };
+
+
+  const approveToken = async () => {
+    alert('approve')
+    try {
+      // TODO: we need to add failure logic
+      if (!window.ethereum) {
+        return;
+      }
+
+      
+      // TODO: check this network id or name and should not be set polygon network.
+      // const networkId = await window.ethereum.request({
+      // method: "net_version",
+      // });
+      // console.log("Connected Network ID:", networkId);
+
+      // TODO: change to input? in async (networkName:string)
+      const networkName: string = selectChain.toLowerCase();
+      const infuraSepoliaURL = process.env.NEXT_PUBLIC_ALCHEMY_SEPOLIA_URL;
+
+      // chain type check
+      if(await getCurChainId() !== networks[networkName].chainId){
+        await window.ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          // 0x13881 == 80001 == polygon testnet chain ID
+          params: [{ chainId: networks[networkName].chainId16 }],
+        });
+      }
+
+      // providers
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+
+      const fundingContractAddress = networks[networkName].fundingContract;
+      // information depend on the source chain
+      const erc20ContractAddress = networks[networkName].bnmToken;
+      // Connect to ERC-20 contract
+      const erc20Contract = new ethers.Contract(
+        erc20ContractAddress,
+        ["function approve(address spender, uint256 amount)"],
+        signer
+      );
+        console.log("toWei : " + utils.toWei(inputValue, "ether"));
+      // Approve the spender
+      const tx = await erc20Contract.approve(signer, utils.toWei(inputValue, "ether"));
+      //const tx = await erc20Contract.approve(fundingContractAddress, 20000);
+      await tx.wait();
+
+      // TODO: change to temprary modal for ux
+      // TODO: wait for a while for confirming tx in the network
+      console.log("Transaction Hash:", tx);
+      alert("Transfer successful!");
+      await fundWithCCIP();
+    } catch (error) {
+      console.error("Error approving spender:", error);
+      alert("Error transferring tokens. Check the console for details.");
+    }
+  };
+
+  const fundWithCCIP = async () => {
+    console.log("fundWIthCCIP");
+    
+    try {
+      // TODO: we need to add failure logic
+      if (!window.ethereum) {
+        return;
+      }
+      const networkName: string = selectChain.toLowerCase();
+
+      // providers
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+
+      // we need to add validate logic for users. when a user send project index which there isn't, this tx is gonna revert.
+      const fundingContractAddress = networks[networkName].fundingContract;
+      const erc20ContractAddress = networks[networkName].bnmToken;
+      const PROTOCOL_ADDRESS = `0x8edbc869108da99f6feb062136bc7d7aa5764542`;
+      // Gas options
+      const gasPrice = utils.toWei('50', 'gwei');
+      const gasLimit = 1000000;
+      // create a contract instance
+      const fundingContract = new ethers.Contract(
+        fundingContractAddress,
+        [
+          `function sendMessagePayLINK(
+          address _receiver,
+          uint _index,
+          address _token,
+          uint256 _amount
+        ) external returns (bytes32 messageId)`,
+        ],
+        signer
+      );
+  
+      // Approve the spender
+      const tx = await fundingContract.sendMessagePayLINK(
+        PROTOCOL_ADDRESS, // receive address = polygon protocol address
+        1, // project index
+        erc20ContractAddress, // token
+        20000,
+        //utils.toWei(inputValue, "wei"), // amount
+        { gasPrice: gasPrice,
+          gasLimit: gasLimit
+        } 
+      );
+
+      const receipt = await tx.wait();
+      // Assuming there is an Event interface with the expected structure
+      interface Event {
+        event: string;
+        args: {
+          messageId: string;
+        };
+      }
+      console.log(receipt);
+      console.log(receipt.events);
+      
+      // Find the "MessageSent" event in the transaction logs
+      const messageSentEvent = receipt.events.find(
+        (event: Event) => event.event === "MessageSent"
+      );
+
+      if (messageSentEvent) {
+        // Access the return value from the event
+        const messageId = messageSentEvent.args.messageId;
+        console.log("Message ID:", messageId);
+        alert(`https://ccip.chain.link/msg/${messageId}`);
+      } else {
+        console.error("MessageSent event not found in transaction logs");
+      }
+    } catch (error) {
+      console.error("Error CCIP :", error);
+      alert("Error transferring tokens. Check the console for details.");
+    }
+  };
+
+  const getTransactionLog = async (txHash:string) => {
+    try {
+      const response = await axios.get(
+        `https://api.etherscan.io/api?module=logs&action=getLogs&txhash=${txHash}`
+      );
+  
+      const logs = response.data.result;
+      // 여기서 logs를 적절히 처리하고 messageid를 얻어내세요.
+      console.log(logs);
+    } catch (error) {
+      console.error('Error fetching transaction logs:', error);
+    }
+  };
+
+const getTransactionReceipt = async () => {
+  try {
+    const infuraUrl = 'https://api.avax.network/ext/bc/C/rpc'; // Avalanche C-Chain Infura endpoint
+    const web3 = new Web3(infuraUrl);
+
+    const infuraAvaxURL = process.env.NEXT_PUBLIC_INFURA_AVAX;
+    const infura = new Web3(
+      new Web3.providers.HttpProvider(infuraAvaxURL ?? "")
+    );
+    
+    const transactionHash = '0x7e70b931e6720c28906e4140f77b052cc2234b3b9b71f45ad0c144987050a3b5';
+    
+    const receipt = await infura.eth.getTransactionReceipt(transactionHash);
+    console.log('Transaction Receipt:', receipt);
+    const messageId = receipt.logs[receipt.logs.length -1].topics[1];
+    console.log(`https://ccip.chain.link/msg/${messageId}`)
+  } catch (error) {
+    console.error('Error fetching transaction receipt:', error);
+  }
+}
+
+
+  const getCurChainId = async () => {
+    const eth = window.ethereum as MetaMaskInpageProvider;
+    const curChainId = await eth.request({
+      method: 'eth_chainId',
+    });
+    console.log("curChainId : " + curChainId);
+    return curChainId;
+  };
+
 
   const sendCCIP = async () => {
     console.log(selectChain);
@@ -246,20 +431,20 @@ export default function SimpleDialog(props: SimpleDialogProps) {
       <DialogContent>
         <List sx={{ pt: 0 }}>
           <ListItem disableGutters>
-            <ListItemButton onClick={() => handleOpenInnerDialog("AVAX/Fuji")}>
+            <ListItemButton onClick={() => handleOpenInnerDialog("Fuji")}>
               <ListItemAvatar>
                 <Avatar src="/assets/images/avalanche-avax-logo.svg">
                   <PersonIcon />
                 </Avatar>
               </ListItemAvatar>
               <ListItemText
-                primary={`AVAX/Fuji 보유 BNM 수량 : ${avaxAmount} CCIP-BnM`}
+                primary={`Fuji 보유 BNM 수량 : ${avaxAmount} CCIP-BnM`}
               />
             </ListItemButton>
           </ListItem>
           <ListItem disableGutters>
             <ListItemButton
-              onClick={() => handleOpenInnerDialog("ETH/Sepolia")}
+              onClick={() => handleOpenInnerDialog("Sepolia")}
             >
               <ListItemAvatar>
                 <Avatar src="/assets/images/eth-diamond-black-white.jpg">
@@ -267,7 +452,7 @@ export default function SimpleDialog(props: SimpleDialogProps) {
                 </Avatar>
               </ListItemAvatar>
               <ListItemText
-                primary={`ETH/Sepolia 보유 BNM 수량 : ${ethAmount} CCIP-BnM`}
+                primary={`Sepolia 보유 BNM 수량 : ${ethAmount} CCIP-BnM`}
               />
             </ListItemButton>
           </ListItem>
@@ -297,7 +482,7 @@ export default function SimpleDialog(props: SimpleDialogProps) {
             <Divider />
             <Button
               variant="outlined"
-              onClick={sendCCIP}
+              onClick={approveToken}
               sx={{ marginTop: 10 }}
             >
               펀딩하기

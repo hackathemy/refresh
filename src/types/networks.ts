@@ -6,6 +6,7 @@ interface Network {
   // chain info
   chainName: string;
   chainId: number;
+  chainId16: string;
   decimal: number;
   nativeCurrencySymbol: string;
   rpcURL: string;
@@ -26,6 +27,7 @@ const networks: Networks = {
   sepolia: {
     chainName: "Ethereum Sepolia",
     chainId: 11155111,
+    chainId16: "0xaa36a7",
     decimal: 18,
     nativeCurrencySymbol: "ETH",
     rpcURL: "",
@@ -42,6 +44,7 @@ const networks: Networks = {
   fuji: {
     chainName: "Avalanche Fuji",
     chainId: 43113,
+    chainId16: "0xa869",
     decimal: 18,
     nativeCurrencySymbol: "AVAX",
     rpcURL: "https://rpc.ankr.com/avalanche_fuji",
@@ -58,6 +61,7 @@ const networks: Networks = {
   mumbai: {
     chainName: "Polygon Mumbai",
     chainId: 80001,
+    chainId16: "0x13881",
     decimal: 18,
     nativeCurrencySymbol: "MATIC",
     rpcURL: "",
