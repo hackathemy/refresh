@@ -31,7 +31,7 @@ export interface IVotingDialogProps {
   onClose: () => void;
 }
 
-export default function VotingDialog(props: IVotingDialogProps) {
+export default function AuthProjectModal(props: IVotingDialogProps) {
   const { onClose, open } = props;
 
   const handleClose = () => {

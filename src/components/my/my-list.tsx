@@ -9,10 +9,13 @@ export const MyList = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const result = await axios.get(
-          `/api/funding/${window.ethereum.selectedAddress}`
+        const result = await axios.get(`/api/project`);
+        const filteredProjects = result.data.projects.filter(
+          (project: any) =>
+            project.writer.toLowerCase() ==
+            window.ethereum.selectedAddress.toLowerCase()
         );
-        setProjects(result.data.projects);
+        setProjects(filteredProjects);
       } catch (error) {
         console.error("Error fetching data:", error);
       }

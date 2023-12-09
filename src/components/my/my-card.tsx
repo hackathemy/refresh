@@ -7,6 +7,7 @@ import {
   CardMedia,
   Chip,
   Divider,
+  Grid,
   Stack,
   SvgIcon,
   Typography,
@@ -16,19 +17,6 @@ import { TrophyIcon, FaceSmileIcon } from "@heroicons/react/24/solid";
 import VotingDialog from "../modal/voting-modal";
 
 export const MyCard = ({ dao }: any) => {
-  const itKeywords = [
-    "coding",
-    "programming",
-    "developer",
-    "technology",
-    "data",
-    "software",
-    "computer",
-    "code",
-    "web development",
-    "network",
-  ];
-
   const [open, setOpen] = useState(false);
 
   const handleClose = () => {
@@ -73,15 +61,7 @@ export const MyCard = ({ dao }: any) => {
               flexDirection: "column",
             }}
           >
-            <CardMedia
-              sx={{ height: 140, borderRadius: 2, marginBottom: 2 }}
-              image={`https://source.unsplash.com/random?${
-                itKeywords[dao.id % 10]
-              }`}
-              title="green iguana"
-            />
-
-            <Typography gutterBottom variant="h5" sx={{ mt: 3 }}>
+            <Typography gutterBottom variant="h5">
               {dao.title}
             </Typography>
             <Typography
@@ -101,9 +81,6 @@ export const MyCard = ({ dao }: any) => {
             </Typography>
             <Typography variant="body2" sx={{ mt: 1 }} color="text.secondary">
               {dao.start_date} ~ {dao.end_date}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {dao.writer}
             </Typography>
           </Box>
         </CardContent>
@@ -141,15 +118,25 @@ export const MyCard = ({ dao }: any) => {
             </Typography>
           </Stack>
         </Stack>
+        <Stack spacing={3} direction={"row"}>
+          <Button
+            size="large"
+            sx={{ mt: 3 }}
+            variant="contained"
+            onClick={() => setOpen(true)}
+          >
+            Authorize Polygon ID
+          </Button>
 
-        <Button
-          size="large"
-          sx={{ mt: 3 }}
-          variant="contained"
-          onClick={() => setOpen(true)}
-        >
-          Execution Fund
-        </Button>
+          <Button
+            size="large"
+            sx={{ mt: 3 }}
+            variant="contained"
+            onClick={() => setOpen(true)}
+          >
+            Withdraw Funds
+          </Button>
+        </Stack>
       </Stack>
 
       <VotingDialog open={open} onClose={handleClose} />
