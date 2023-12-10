@@ -1,4 +1,4 @@
-import { Avatar } from "@mui/material";
+import { Avatar, Typography } from "@mui/material";
 
 export const EnsNameCard = ({ name, avatar }: any) => {
   console.log(avatar);
@@ -14,7 +14,7 @@ export const EnsNameCard = ({ name, avatar }: any) => {
         src={avatar || "https://i.imgur.com/UhV7H97.jpeg"}
         style={{ width: "2rem", height: "2rem", objectFit: "cover" }}
       />
-      <span>{name}</span>
+      <Typography variant="subtitle1">{name}</Typography>
     </div>
   );
 };

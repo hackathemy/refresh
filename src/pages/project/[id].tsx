@@ -32,7 +32,12 @@ import axios from "axios";
 import { useRouter } from "next/router";
 import { Progress } from "@/components/progress/linear-progress";
 
+import { fetchEnsName, fetchEnsAvatar } from "@wagmi/core";
+import { EnsNameCard } from "@/components/ens/namecard";
+
 const Page = () => {
+  const [ensName, setEnsName] = useState("");
+  const [ensAvatar, setEnsAvatar] = useState("");
   const router = useRouter();
   const id = router.query.id;
   const [fundingList, setFundingList] = useState([]);
@@ -153,6 +158,30 @@ const Page = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      if (project) {
+        const name = await fetchEnsName({
+          address: project.writer,
+          chainId: 11155111,
+        });
+
+        if (name) {
+          setEnsName(name);
+
+          const avatarUrl = await fetchEnsAvatar({
+            name: name,
+            chainId: 11155111,
+          });
+
+          if (avatarUrl) {
+            setEnsAvatar(avatarUrl);
+          }
+        }
+      }
+    };
+    fetchData();
+  }, [project]);
   return (
     <DashboardLayout>
       <Head>
@@ -175,6 +204,13 @@ const Page = () => {
               />
               <Typography variant="h3">{project?.title}</Typography>
               <Typography variant="body1">{project?.desc}</Typography>
+              <Box sx={{ mt: 3, mb: 3 }}>
+                {ensName ? (
+                  <EnsNameCard name={ensName} avatar={ensAvatar} />
+                ) : (
+                  <Typography variant="subtitle1">{project?.writer}</Typography>
+                )}
+              </Box>
 
               <Grid container spacing={2} sx={{ mb: 3, mt: 2 }}>
                 <Grid item xs={12} sm={4} md={3}>

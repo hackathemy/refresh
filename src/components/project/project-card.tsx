@@ -107,7 +107,9 @@ export const ProjectCard = ({ project }: any) => {
             {ensName ? (
               <EnsNameCard name={ensName} avatar={ensAvatar} />
             ) : (
-              <>{maskAddress(project.writer)}</>
+              <Typography variant="subtitle1">
+                {maskAddress(project.writer)}
+              </Typography>
             )}
           </Box>
           <Box sx={{ width: "100%", marginTop: 2 }}>
