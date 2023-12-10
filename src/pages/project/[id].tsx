@@ -1,46 +1,36 @@
 import Head from "next/head";
+import { CheckBadgeIcon } from "@heroicons/react/24/solid";
 import {
-  Avatar,
   Box,
   Button,
+  Card,
+  CardContent,
   CardMedia,
   Chip,
   Container,
-  Divider,
+  Grid,
   Link,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
   Paper,
+  SvgIcon,
   Table,
   TableBody,
   TableCell,
-  TableContainer,
   TableHead,
   TableRow,
   Typography,
-  styled,
 } from "@mui/material";
+import Markdown from "react-markdown";
 import { Layout as DashboardLayout } from "../../layouts/dashboard/layout";
 import { useEffect, useState } from "react";
 import SimpleDialog from "@/components/project/funding-modal";
-import BorderLinearProgress from "@/components/BorderLinearProgress";
-import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
-import PeopleIcon from "@mui/icons-material/People";
-import HorizontalLinearAlternativeLabelStepper from "@/components/HorizontalLinearAlternativeLabelStepper";
-import { useWeb3 } from "@/hooks/useWeb3";
-import TokenContract from "../../../public/assets/abi/sender_abi.json";
-import Erc20TokenContract from "../../../public/assets/abi/erc20_abi.json";
-import Web3 from "web3";
-import { Alchemy, Network, Utils } from "alchemy-sdk";
-import { maskAddress } from "@/functions/string-functions";
-import { networks } from "@/types/networks";
+import {
+  formatDate,
+  formatNumber,
+  maskAddress,
+} from "@/functions/string-functions";
 import axios from "axios";
-import { ethers } from "ethers";
 import { useRouter } from "next/router";
-
+import { Progress } from "@/components/progress/linear-progress";
 
 const Page = () => {
   const router = useRouter();
@@ -49,7 +39,127 @@ const Page = () => {
   const [project, setProject]: any = useState();
   const [open, setOpen] = useState(false);
   const [isFixed, setIsFixed] = useState(false);
+  const markdown = `
+  # A demo of \`react-markdown\`
   
+  \`react-markdown\` is a markdown component for React.
+  
+  👉 Changes are re-rendered as you type.
+  
+  👈 Try writing some markdown on the left.
+  
+  ## Overview
+  
+  * Follows [CommonMark](https://commonmark.org)
+  * Optionally follows [GitHub Flavored Markdown](https://github.github.com/gfm/)
+  * Renders actual React elements instead of using \`dangerouslySetInnerHTML\`
+  * Lets you define your own components (to render \`MyHeading\` instead of \`'h1'\`)
+  * Has a lot of plugins
+  
+  ## Contents
+  
+  Here is an example of a plugin in action
+  ([\`remark-toc\`](https://github.com/remarkjs/remark-toc)).
+  **This section is replaced by an actual table of contents**.
+  
+  ## Syntax highlighting
+  
+  Here is an example of a plugin to highlight code:
+  [\`rehype-highlight\`](https://github.com/rehypejs/rehype-highlight).
+  
+  \`\`\`js
+  import React from 'react'
+  import ReactDOM from 'react-dom'
+  import Markdown from 'react-markdown'
+  import rehypeHighlight from 'rehype-highlight'
+  
+  const markdown = \`
+  # Your markdown here
+  \`
+  
+  ReactDOM.render(
+    <Markdown rehypePlugins={[rehypeHighlight]}>{markdown}</Markdown>,
+    document.querySelector('#content')
+  )
+  \`\`\`
+  
+  Pretty neat, eh?
+  
+  ## GitHub flavored markdown (GFM)
+  
+  For GFM, you can *also* use a plugin:
+  [\`remark-gfm\`](https://github.com/remarkjs/react-markdown#use).
+  It adds support for GitHub-specific extensions to the language:
+  tables, strikethrough, tasklists, and literal URLs.
+  
+  These features **do not work by default**.
+  👆 Use the toggle above to add the plugin.
+  
+  | Feature    | Support              |
+  | ---------: | :------------------- |
+  | CommonMark | 100%                 |
+  | GFM        | 100% w/ \`remark-gfm\` |
+  
+  ~~strikethrough~~
+  
+  * [ ] task list
+  * [x] checked item
+  
+  https://example.com
+  
+  ## HTML in markdown
+  
+  ⚠️ HTML in markdown is quite unsafe, but if you want to support it, you can
+  use [\`rehype-raw\`](https://github.com/rehypejs/rehype-raw).
+  You should probably combine it with
+  [\`rehype-sanitize\`](https://github.com/rehypejs/rehype-sanitize).
+  
+  <blockquote>
+    👆 Use the toggle above to add the plugin.
+  </blockquote>
+  
+  ## Components
+  
+  You can pass components to change things:
+  
+  \`\`\`js
+  import React from 'react'
+  import ReactDOM from 'react-dom'
+  import Markdown from 'react-markdown'
+  import MyFancyRule from './components/my-fancy-rule.js'
+  
+  const markdown = \`
+  # Your markdown here
+  \`
+  
+  ReactDOM.render(
+    <Markdown
+      components={{
+        // Use h2s instead of h1s
+        h1: 'h2',
+        // Use a component instead of hrs
+        hr(props) {
+          const {node, ...rest} = props
+          return <MyFancyRule {...rest} />
+        }
+      }}
+    >
+      {markdown}
+    </Markdown>,
+    document.querySelector('#content')
+  )
+  \`\`\`
+  
+  ## More info?
+  
+  Much more info is available in the
+  [readme on GitHub](https://github.com/remarkjs/react-markdown)!
+  
+  ***
+  
+  A component by [Espen Hovlandsdal](https://espen.codes/)
+  `;
+
   const handleClose = (value: string) => {
     setOpen(false);
   };
@@ -63,7 +173,16 @@ const Page = () => {
     setOpen(true);
   };
 
-  
+  const totalFundingAmount = () => {
+    let totalAmount = 0;
+
+    for (const funding of fundingList) {
+      totalAmount += (funding as any).amount;
+    }
+
+    return formatNumber(totalAmount);
+  };
+
   useEffect(() => {
     if (!id) {
       return;
@@ -82,10 +201,8 @@ const Page = () => {
 
     fetchData();
   }, [id]);
-  
 
   useEffect(() => {
-
     const handleScroll = () => {
       // 특정 위치(예: 200px)에서 스크롤이 발생하면 isFixed 상태를 true로 설정
       const scrollPosition = window.scrollY;
@@ -118,160 +235,138 @@ const Page = () => {
           py: 8,
         }}
       >
-        <SimpleDialog
-    
-          open={open}
-          onClose={handleClose}
-        />
+        <SimpleDialog open={open} onClose={handleClose} />
         <Container maxWidth="xl">
           <Box display="grid" gridTemplateColumns="repeat(12, 1fr)" gap={2}>
-            <Box
-              gridColumn="span 8"
-              sx={{ backgroundColor: "#99999", padding: 2, borderRadius: 2 }}
-            >
+            <Box gridColumn="span 8">
               <CardMedia
-                sx={{ height: 300, borderRadius: 2, marginBottom: 1 }}
+                sx={{ height: 300, borderRadius: 2, mb: 5 }}
                 image="https://source.unsplash.com/random?it"
                 title="green iguana"
               />
-              <Typography variant="h4">{project?.title}</Typography>
+              <Typography variant="h3">{project?.title}</Typography>
               <Typography variant="body1">{project?.desc}</Typography>
 
-              <HorizontalLinearAlternativeLabelStepper />
-
-              <TableContainer component={Paper} style={{ marginTop: 50 }}>
-                <Table sx={{ minWidth: 650 }}>
-                  <TableBody>
-                    <TableRow>
-                      <TableCell align="left">
-                        <Typography variant="subtitle2">RAISED</Typography>
-                        <Typography variant="h4">£4,701,505.67</Typography>
-                      </TableCell>
-                      <TableCell align="left">
-                        <Typography variant="subtitle2">INVESTORS</Typography>
-                        <Typography variant="h4">4544</Typography>
-                      </TableCell>
-                      <TableCell align="left">
-                        <Typography variant="subtitle2">TARGET</Typography>
-                        <Typography variant="h4">£1,000,000</Typography>
-                      </TableCell>
-                    </TableRow>
-
-                    <TableRow>
-                      <TableCell align="left">
-                        <Typography variant="subtitle2">EQUITY</Typography>
-                        <Typography variant="h4">2.72%</Typography>
-                      </TableCell>
-                      <TableCell align="left">
-                        <Typography variant="subtitle2">
-                          PRE-MONEY VALUATION
-                        </Typography>
-                        <Typography variant="h4">£167,860,000</Typography>
-                      </TableCell>
-                      <TableCell align="left">
-                        <Typography variant="subtitle2">SHARE PRICE</Typography>
-                        <Typography variant="h4">£2.03</Typography>
-                      </TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
-              </TableContainer>
-
-              <List
+              <Grid container spacing={2} sx={{ mb: 3 }}>
+                <Grid item xs={12} sm={4} md={3}>
+                  <Card
+                    sx={{
+                      height: "100%",
+                      display: "flex",
+                      flexDirection: "column",
+                    }}
+                  >
+                    <CardContent sx={{ flexGrow: 1 }}>
+                      <Typography
+                        gutterBottom
+                        variant="h5"
+                        component="h2"
+                        sx={{ mt: 2 }}
+                      >
+                        Category
+                      </Typography>
+                      <Typography
+                        gutterBottom
+                        variant="h5"
+                        component="h2"
+                        sx={{ mt: 2 }}
+                      >
+                        {project?.category ?? "Web3"}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>{" "}
+                <Grid item xs={12} sm={4} md={3}>
+                  <Card
+                    sx={{
+                      height: "100%",
+                      display: "flex",
+                      flexDirection: "column",
+                    }}
+                  >
+                    <CardContent sx={{ flexGrow: 1 }}>
+                      <Typography
+                        gutterBottom
+                        variant="h5"
+                        component="h2"
+                        sx={{ mt: 2 }}
+                      >
+                        Funding Goal
+                      </Typography>
+                      <Typography
+                        gutterBottom
+                        variant="h5"
+                        component="h2"
+                        sx={{ mt: 2 }}
+                      >
+                        {project?.goal} CCIP-BnM
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>{" "}
+                <Grid item xs={12} sm={4} md={3}>
+                  <Card
+                    sx={{
+                      height: "100%",
+                      display: "flex",
+                      flexDirection: "column",
+                    }}
+                  >
+                    <CardContent sx={{ flexGrow: 1 }}>
+                      <Typography
+                        gutterBottom
+                        variant="h5"
+                        component="h2"
+                        sx={{ mt: 2 }}
+                      >
+                        Identity Certifiate
+                      </Typography>
+                      <Typography gutterBottom sx={{ mt: 2 }}>
+                        <SvgIcon color="primary" fontSize="large">
+                          <CheckBadgeIcon />
+                        </SvgIcon>
+                      </Typography>
+                      <small>with Polygon ID</small>
+                    </CardContent>
+                  </Card>
+                </Grid>{" "}
+                <Grid item xs={12} sm={4} md={3}>
+                  <Card
+                    sx={{
+                      height: "100%",
+                      display: "flex",
+                      flexDirection: "column",
+                    }}
+                  >
+                    <CardContent sx={{ flexGrow: 1 }}>
+                      <Typography
+                        gutterBottom
+                        variant="h5"
+                        component="h2"
+                        sx={{ mt: 2 }}
+                      >
+                        Project Certificate
+                      </Typography>
+                      <Typography gutterBottom sx={{ mt: 2 }}>
+                        <SvgIcon color="primary" fontSize="large">
+                          <CheckBadgeIcon />
+                        </SvgIcon>
+                      </Typography>
+                      <small>with Chainlink PoR</small>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              </Grid>
+              <Box
+                component={Paper}
                 sx={{
-                  width: "100%",
-
-                  bgcolor: "background.paper",
+                  padding: 3,
+                  mt: 3,
                 }}
               >
-                <ListItem>
-                  <ListItemText
-                    primary="Problem"
-                    secondary="Jan 9, 2014"
-                    sx={{ width: "10%" }}
-                  />
-                  <ListItemText
-                    sx={{ width: "70%" }}
-                    primary="The savings account is the world’s most popular financial product. Used by 69% of the adults globally, yet many people make little return on their savings; the UK average savings rate is still 1.96%"
-                  />
-                </ListItem>
-                <Divider variant="inset" component="li" />
-                <ListItem>
-                  <ListItemText
-                    primary="Solution"
-                    secondary="Jan 9, 2014"
-                    sx={{ width: "10%" }}
-                  />
-                  <ListItemText
-                    sx={{ width: "70%" }}
-                    primary="Chip has an award-winning & highly rated app (‘People’s Choice Award 23’ Finder, 4.5* on the App Store) giving users one place to effortlessly & automatically build wealth across savings & investments"
-                  />
-                </ListItem>
-                <Divider variant="inset" component="li" />
-                <ListItem>
-                  <ListItemText
-                    primary="Business model"
-                    secondary="Jan 9, 2014"
-                    sx={{ width: "10%" }}
-                  />
-                  <ListItemText
-                    sx={{ width: "70%" }}
-                    primary="We offer competitive savings products and investment products, our revenue is a mix of spreads on returns or subscription fees on these. As AuA grows, so does revenue"
-                  />
-                </ListItem>
-              </List>
-
-              <Divider variant="middle" />
-
-              <List
-                sx={{
-                  marginTop: 10,
-                  width: "100%",
-
-                  bgcolor: "background.paper",
-                }}
-              >
-                <Typography variant="h4">주최자 및 Github</Typography>
-                <ListItem>
-                  <ListItemButton>
-                    <ListItemIcon>
-                      <PeopleIcon style={{ fontSize: 40, color: "white" }} />
-                    </ListItemIcon>
-                    <ListItemText primary="ABCUser" />
-                    <ListItemText primary="PolygonId" />
-                  </ListItemButton>
-                </ListItem>
-                <ListItem>
-                  <ListItemButton>
-                    <ListItemIcon>
-                      <PeopleIcon style={{ fontSize: 40, color: "white" }} />
-                    </ListItemIcon>
-                    <ListItemText primary="Github" />
-                    <ListItemText>
-                      <Chip
-                        avatar={
-                          <Avatar src="/assets/images/github-mark-white.png">
-                            G
-                          </Avatar>
-                        }
-                        label="last update : 5 days ago"
-                        color="primary"
-                        variant="outlined"
-                      />
-                    </ListItemText>
-                  </ListItemButton>
-                </ListItem>
-                <ListItem>
-                  <ListItemButton>
-                    <ListItemIcon>
-                      <PeopleIcon style={{ fontSize: 40, color: "white" }} />
-                    </ListItemIcon>
-                    <ListItemText primary="PoR 지분 증명" />
-                    <ListItemText primary="지분 증명 내용 들어가면 좋을 듯" />
-                  </ListItemButton>
-                </ListItem>
-              </List>
-              <Table>
+                <Markdown>{markdown}</Markdown>
+              </Box>
+              <Table sx={{ mt: 5 }}>
                 <TableHead>
                   <TableRow>
                     <TableCell>Project</TableCell>
@@ -279,7 +374,7 @@ const Page = () => {
                     <TableCell>Address</TableCell>
                     <TableCell>Amount</TableCell>
                     <TableCell>Date</TableCell>
-                    <TableCell>Tracking</TableCell>
+                    <TableCell>CCIP</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -324,28 +419,6 @@ const Page = () => {
                                 sx={{ marginRight: 2 }}
                               />
                             </Link>
-                            <Link
-                              href={`https://ccip.chain.link/msg/0xdfcd24985af75ee603013f35a6eef92369132f7d62be898c6f0903e8ed11daf9`}
-                              target="_blank"
-                            >
-                              <Chip
-                                label="Source"
-                                color="primary"
-                                variant="outlined"
-                                sx={{ marginRight: 2 }}
-                              />
-                            </Link>
-                            <Link
-                              href={`https://ccip.chain.link/msg/0xdfcd24985af75ee603013f35a6eef92369132f7d62be898c6f0903e8ed11daf9`}
-                              target="_blank"
-                            >
-                              <Chip
-                                label="Destination"
-                                color="primary"
-                                variant="outlined"
-                                sx={{ marginRight: 2 }}
-                              />
-                            </Link>
                           </TableCell>
                         </TableRow>
                       );
@@ -353,51 +426,32 @@ const Page = () => {
                 </TableBody>
               </Table>
             </Box>
+
             <Box
+              component={Paper}
               gridColumn="span 4"
               sx={{
                 // isFixed 값에 따라 스타일을 동적으로 설정
                 position: isFixed ? "sticky" : "sticky",
                 top: isFixed ? "0" : "200",
                 borderRadius: 2,
-                height: 350,
-                // 추가적인 스타일은 필요에 따라 조절
-
-                backgroundColor: "gray",
-                boxShadow: isFixed ? "0px 2px 5px rgba(0, 0, 0, 0.1)" : "none",
-                padding: "16px",
+                ml: 5,
+                height: 300,
+                padding: 3,
               }}
             >
               <Box>
-                <Typography variant="subtitle2">모인금액</Typography>
-                <Typography variant="h4">4544 USDC</Typography>
-
-                <BorderLinearProgress variant="determinate" value={70} />
+                <Chip label="Now Funding" color="primary" variant="outlined" />
+                <Typography variant="h4" sx={{ mt: 2, mb: 2 }}>
+                  {totalFundingAmount()} CCIP-BnM
+                </Typography>
+                <Progress color="success" />
+                <Typography variant="subtitle1" sx={{ mt: 2, mb: 4 }}>
+                  {formatDate(project?.start_date)} ~{" "}
+                  {formatDate(project?.end_date)}
+                </Typography>
               </Box>
-              <List>
-                <ListItem>
-                  <ListItemButton>
-                    <ListItemIcon>
-                      <CalendarMonthIcon
-                        style={{ fontSize: 40, color: "white" }}
-                      />
-                    </ListItemIcon>
-                    <ListItemText color="black" primary="기간" />
-                    <ListItemText primary="2023-12-31" />
-                  </ListItemButton>
-                </ListItem>
-                <ListItem>
-                  <ListItemButton>
-                    <ListItemIcon>
-                      <PeopleIcon style={{ fontSize: 40, color: "white" }} />
-                    </ListItemIcon>
-                    <ListItemText primary="참여자 수" />
-                    <ListItemText primary="30명" />
-                  </ListItemButton>
-                </ListItem>
-              </List>
-              
-      
+
               <Button
                 fullWidth
                 size="large"
@@ -405,9 +459,8 @@ const Page = () => {
                 variant="contained"
                 onClick={handleClickOpen}
               >
-                펀딩하기
+                Funding
               </Button>
-              
             </Box>
           </Box>
         </Container>

@@ -41,11 +41,11 @@ const Page = () => {
         }}
       >
         <Container maxWidth="xl">
-          <Grid container spacing={3} sx={{ mb: 3 }}>
+          <Grid container spacing={2} sx={{ mb: 3 }}>
             {stats &&
               stats.map((stat: any) => {
                 return (
-                  <Grid item xs={12} sm={4} md={3}>
+                  <Grid item xs={12} sm={3} md={2}>
                     <Card
                       sx={{
                         height: "100%",
@@ -54,7 +54,7 @@ const Page = () => {
                       }}
                     >
                       <CardContent sx={{ flexGrow: 1 }}>
-                        <Typography variant="h4">from {stat.chain}</Typography>
+                        <Typography variant="h4">{stat.chain}</Typography>
                         <Typography
                           gutterBottom
                           variant="h5"

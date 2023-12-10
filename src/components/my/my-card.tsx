@@ -125,7 +125,16 @@ export const MyCard = ({ dao }: any) => {
             variant="contained"
             onClick={() => setOpen(true)}
           >
-            Authorize Polygon ID
+            Get Credential by Polygon ID
+          </Button>
+
+          <Button
+            size="large"
+            sx={{ mt: 3 }}
+            variant="contained"
+            onClick={() => setOpen(true)}
+          >
+            PoR Verify
           </Button>
 
           <Button

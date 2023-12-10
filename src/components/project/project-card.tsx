@@ -14,6 +14,7 @@ import {
 
 import { FaceSmileIcon, TrophyIcon } from "@heroicons/react/24/solid";
 import { useState, useRef, useEffect } from "react";
+import { Progress } from "../progress/linear-progress";
 
 export const ProjectCard = ({ project }: any) => {
   const itKeywords = [
@@ -28,34 +29,6 @@ export const ProjectCard = ({ project }: any) => {
     "web development",
     "network",
   ];
-
-  const [progress, setProgress] = useState(0);
-  const [buffer, setBuffer] = useState(10);
-
-  const progressRef = useRef(() => {});
-  useEffect(() => {
-    progressRef.current = () => {
-      if (progress > 100) {
-        setProgress(0);
-        setBuffer(10);
-      } else {
-        const diff = Math.random() * 10;
-        const diff2 = Math.random() * 10;
-        setProgress(progress + diff);
-        setBuffer(progress + diff + diff2);
-      }
-    };
-  });
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      progressRef.current();
-    }, 500);
-
-    return () => {
-      clearInterval(timer);
-    };
-  }, []);
   return (
     <Card>
       <CardActionArea href={`/project/${project.id}`}>
@@ -102,6 +75,11 @@ export const ProjectCard = ({ project }: any) => {
           </Box>
           <Box sx={{ width: "100%", marginTop: 2 }}>
             <Stack direction="row" spacing={1}>
+              <Chip
+                label="Polygon ID Certified"
+                color="info"
+                variant="outlined"
+              />
               {/* Github 입력한 것 또는 인증한 경우 */}
               <Chip label="PoR Certified" color="info" variant="outlined" />
               {/* PoR 인증한 경우 */}
@@ -113,19 +91,9 @@ export const ProjectCard = ({ project }: any) => {
         <Box sx={{ flexGrow: 1 }} />
         <Divider />
         {project.goal < project.amount ? (
-          <LinearProgress
-            variant="buffer"
-            color="secondary"
-            value={progress}
-            valueBuffer={buffer}
-          />
+          <Progress color="secondary" />
         ) : (
-          <LinearProgress
-            variant="buffer"
-            color="success"
-            value={progress}
-            valueBuffer={buffer}
-          />
+          <Progress color="success" />
         )}
         <Stack justifyContent="space-between" spacing={2} sx={{ p: 3 }}>
           <Stack alignItems="center" direction="row" spacing={1}>

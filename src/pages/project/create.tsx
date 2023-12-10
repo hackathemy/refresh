@@ -15,11 +15,11 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { Layout as DashboardLayout } from "../layouts/dashboard/layout";
+import { Layout as DashboardLayout } from "../../layouts/dashboard/layout";
 import { useCallback, useState } from "react";
 import Web3, { validator } from "web3";
 import axios from "axios";
-import PolygonContractABI from "../../public/assets/abi/polygon_contract.json";
+import PolygonContractABI from "../../../public/assets/abi/polygon_contract.json";
 import { useWeb3 } from "@/hooks/useWeb3";
 import { MetaMaskInpageProvider } from "@metamask/providers";
 

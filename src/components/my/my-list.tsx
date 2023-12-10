@@ -1,4 +1,4 @@
-import { Grid } from "@mui/material";
+import { Button, Container, Grid } from "@mui/material";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { MyCard } from "./my-card";
@@ -25,15 +25,24 @@ export const MyList = () => {
   }, []);
 
   return (
-    <Grid container spacing={3}>
-      {projects &&
-        projects.map((dao: any) => {
-          return (
-            <Grid item xs={12} md={12} lg={12} key={dao.id}>
-              <MyCard dao={dao} />
-            </Grid>
-          );
-        })}
-    </Grid>
+    <Container>
+      <Button
+        sx={{ mb: 3 }}
+        variant="contained"
+        onClick={() => (location.href = "/project/create")}
+      >
+        Create RE-fresh Project for Funding
+      </Button>
+      <Grid container spacing={3}>
+        {projects &&
+          projects.map((dao: any) => {
+            return (
+              <Grid item xs={12} md={12} lg={12} key={dao.id}>
+                <MyCard dao={dao} />
+              </Grid>
+            );
+          })}
+      </Grid>
+    </Container>
   );
 };
