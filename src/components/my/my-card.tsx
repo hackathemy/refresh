@@ -4,18 +4,13 @@ import {
   Card,
   CardActionArea,
   CardContent,
-  CardMedia,
-  Chip,
   Divider,
-  Grid,
   Stack,
   SvgIcon,
   Typography,
 } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { TrophyIcon, FaceSmileIcon } from "@heroicons/react/24/solid";
-import VotingDialog from "../modal/builder-execute-modal";
-import CredentialDialog from "../modal/builder-modal";
 import BuilderVotingDialog from "../modal/builder-execute-modal";
 import BuilderCredentialDialog from "../modal/builder-modal";
 
@@ -130,17 +125,21 @@ export const MyCard = ({ dao }: any) => {
             size="large"
             sx={{ mt: 3 }}
             variant="contained"
+            disabled={dao?.pid_verified}
             onClick={() => setOpenCredential(true)}
           >
-            Get Credential by Polygon ID
+            {dao?.pid_verified
+              ? "Credential Verified"
+              : "Get Credential by Polygon ID"}
           </Button>
           <Button
             size="large"
             sx={{ mt: 3 }}
             variant="contained"
+            disabled={dao?.por_verified}
             onClick={() => alert("@TODO")}
           >
-            PoR Verify
+            {dao?.por_verified ? "PoR Verified" : "PoR Verify"}
           </Button>
 
           <Button
@@ -154,7 +153,6 @@ export const MyCard = ({ dao }: any) => {
         </Stack>
       </Stack>
 
-    
       <BuilderVotingDialog
         open={open}
         onClose={handleClose}

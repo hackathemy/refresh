@@ -13,7 +13,7 @@ export interface ICredentialDialogProps {
   projectId: any;
 }
 
-export default function BuilderCredentialDialog(props: ICredentialDialogProps) {
+export default function CredentialDialog(props: ICredentialDialogProps) {
   const { onClose, open, projectId } = props;
   const [qrCodeValue, setQrCodeValue] = useState("");
   const [sessionId, setSessionId] = useState("");
@@ -23,7 +23,7 @@ export default function BuilderCredentialDialog(props: ICredentialDialogProps) {
 
   const getAuthQr = async () => {
     try {
-      const result = await axios.get(`/api/builder/auth`);
+      const result = await axios.get(`/api/vote/auth`);
       // QR 코드 값 생성
       const sessionID = `${result.data.sessionID}`;
       const qrCodeData = `${result.data.qrCodeLink}`;
@@ -48,7 +48,7 @@ export default function BuilderCredentialDialog(props: ICredentialDialogProps) {
         return false;
       }
 
-      const result = await axios.get(`/api/builder/credential`, {
+      const result = await axios.get(`/api/vote/credential`, {
         params: { sessionId: sessionID },
       });
       // QR 코드 값 생성
@@ -71,21 +71,14 @@ export default function BuilderCredentialDialog(props: ICredentialDialogProps) {
   return (
     <Dialog onClose={handleClose} open={open}>
       <DialogTitle variant="h3">Builder Credential</DialogTitle>
-      <DialogContent
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
+      <DialogContent>
         <Typography variant="subtitle1">
-          Authenticate your identity for funder authority( Polygon ID ).
-          <br />
+          Authenticate your identity for builder authority( Polygon ID ).
           <br />
           Your credentials are securely authenticated with zk.
         </Typography>
         {qrCodeValue && (
-          <QRCode value={qrCodeValue} style={{ width: 250, height: 250 }} />
+          <QRCode value={qrCodeValue} style={{ width: 500, height: 500 }} />
         )}
       </DialogContent>
     </Dialog>

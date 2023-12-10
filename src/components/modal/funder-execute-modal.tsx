@@ -42,21 +42,14 @@ export default function FunderVotingDialog(props: IVotingDialogProps) {
   return (
     <Dialog onClose={handleClose} open={open}>
       <DialogTitle variant="h3">Voting for execute fund</DialogTitle>
-      <DialogContent
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
+      <DialogContent>
         <Typography variant="subtitle1">
           Authenticate your identity for funder authority( Polygon ID ).
-          <br />
           <br />
           Your credentials are securely authenticated with zk.
         </Typography>
         {qrCodeValue && (
-          <QRCode value={qrCodeValue} style={{ width: 250, height: 250 }} />
+          <QRCode value={qrCodeValue} style={{ width: 500, height: 500 }} />
         )}
       </DialogContent>
     </Dialog>

@@ -35,6 +35,7 @@ export default async function handler(
           "`desc`, " +
           "goal,  " +
           "writer,  " +
+          "pid_verified, por_verified," +
           "DATE_FORMAT(start_date, '%Y-%m-%d') AS start_date, " +
           "DATE_FORMAT(end_date, '%Y-%m-%d') AS end_date, " +
           "token_name as tokenName, " +
