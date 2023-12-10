@@ -40,124 +40,53 @@ const Page = () => {
   const [open, setOpen] = useState(false);
   const [isFixed, setIsFixed] = useState(false);
   const markdown = `
-  # A demo of \`react-markdown\`
+  # Discovey ( Discovery + Survey )
   
-  \`react-markdown\` is a markdown component for React.
+  ETHONLINE 2023 WINNER OF 🥉 Safe — Best Use of Safe{Core} for AA
   
-  👉 Changes are re-rendered as you type.
+  👉 This project has not been carried out since ethglobal02023, and I wanted to breathe life into it again through RE-fresh, so I requested funding.
   
-  👈 Try writing some markdown on the left.
+  ## Project Description
+  Discovey is a social networking service that offers survey and recruiting integration.
+
+  Discovey serves B2B2C. This is where users can earn money by providing their data and survey data. By purchasing a variety of data, companies can obtain broader and more valuable data to find talent, gain broader insights, and easily utilize the data for a variety of services. Advertisements are also provided to help companies promote their business.
   
-  ## Overview
+  - Discovey serves **B2B2C**, allowing users to earn money by providing their data and survey responses. Companies can purchase diverse and valuable data for talent acquisition, gaining insights, and advertising.
+
+  - Utilize **Next.ID** in the **Mask Network** to issue user data as a **Decentralized Identifier (DID)**.
   
-  * Follows [CommonMark](https://commonmark.org)
-  * Optionally follows [GitHub Flavored Markdown](https://github.github.com/gfm/)
-  * Renders actual React elements instead of using \`dangerouslySetInnerHTML\`
-  * Lets you define your own components (to render \`MyHeading\` instead of \`'h1'\`)
-  * Has a lot of plugins
+  - The platform provides advertising through push notifications using the **Push Protocol**. Users subscribe to Discovey channels, generate survey data, receive rewards for completed surveys, and are then targeted with advertisements via push notifications.
   
-  ## Contents
+  - Integration of the **AA SDK for Safe** adds technical aspects of account abstraction, enabling the distribution of reward tokens and future feature integration.
   
-  Here is an example of a plugin in action
-  ([\`remark-toc\`](https://github.com/remarkjs/remark-toc)).
-  **This section is replaced by an actual table of contents**.
+  - **ZK-EVM** is used on **Polygon**, ensuring faster transaction speeds and lower gas fees.
   
-  ## Syntax highlighting
+
+  ## How it's Made
+
+  - To provide a familiar **Web2-style UI/UX**, Google email login using **Web3auth** is offered.
   
-  Here is an example of a plugin to highlight code:
-  [\`rehype-highlight\`](https://github.com/rehypejs/rehype-highlight).
+  - Automatic generation of DID in the login process is implemented by utilizing **Next.ID** on the **Mask Network**.
   
-  \`\`\`js
-  import React from 'react'
-  import ReactDOM from 'react-dom'
-  import Markdown from 'react-markdown'
-  import rehypeHighlight from 'rehype-highlight'
+  - OAuth authentication is used for users who may have reservations about granting permissions, ensuring only necessary read permissions for GitHub information. User data is signed and stored in Next.ID's key-value repository.
   
-  const markdown = \`
-  # Your markdown here
-  \`
+  - Companies can provide advertisements to users via push notifications using the **Push Protocol**. Users subscribe to channels on Discovey for targeted ad delivery.
   
-  ReactDOM.render(
-    <Markdown rehypePlugins={[rehypeHighlight]}>{markdown}</Markdown>,
-    document.querySelector('#content')
-  )
-  \`\`\`
+  - The proprietary token, **DOY**, is issued and provided through **ZK EVM**. Additionally, **AA on Safe** is used to deliver services.
   
-  Pretty neat, eh?
-  
-  ## GitHub flavored markdown (GFM)
-  
-  For GFM, you can *also* use a plugin:
-  [\`remark-gfm\`](https://github.com/remarkjs/react-markdown#use).
-  It adds support for GitHub-specific extensions to the language:
-  tables, strikethrough, tasklists, and literal URLs.
-  
-  These features **do not work by default**.
-  👆 Use the toggle above to add the plugin.
-  
-  | Feature    | Support              |
-  | ---------: | :------------------- |
-  | CommonMark | 100%                 |
-  | GFM        | 100% w/ \`remark-gfm\` |
-  
-  ~~strikethrough~~
-  
-  * [ ] task list
-  * [x] checked item
-  
-  https://example.com
-  
-  ## HTML in markdown
-  
-  ⚠️ HTML in markdown is quite unsafe, but if you want to support it, you can
-  use [\`rehype-raw\`](https://github.com/rehypejs/rehype-raw).
-  You should probably combine it with
-  [\`rehype-sanitize\`](https://github.com/rehypejs/rehype-sanitize).
-  
-  <blockquote>
-    👆 Use the toggle above to add the plugin.
-  </blockquote>
-  
-  ## Components
-  
-  You can pass components to change things:
-  
-  \`\`\`js
-  import React from 'react'
-  import ReactDOM from 'react-dom'
-  import Markdown from 'react-markdown'
-  import MyFancyRule from './components/my-fancy-rule.js'
-  
-  const markdown = \`
-  # Your markdown here
-  \`
-  
-  ReactDOM.render(
-    <Markdown
-      components={{
-        // Use h2s instead of h1s
-        h1: 'h2',
-        // Use a component instead of hrs
-        hr(props) {
-          const {node, ...rest} = props
-          return <MyFancyRule {...rest} />
-        }
-      }}
-    >
-      {markdown}
-    </Markdown>,
-    document.querySelector('#content')
-  )
-  \`\`\`
-  
-  ## More info?
-  
-  Much more info is available in the
-  [readme on GitHub](https://github.com/remarkjs/react-markdown)!
-  
-  ***
-  
-  A component by [Espen Hovlandsdal](https://espen.codes/)
+  ## Reference
+
+  - Github [Discovey Github](https://github.com/pjhnocegood/discovey)
+
+  - ETHGLOBAL 2023 Page [ETHGLOBAL 2023 Project Description](https://ethglobal.com/showcase/discovey-tuywc)
+
+  - Demo [DEMO](https://stream.mux.com/rDE02xETV02Qbme00cUcXk02bSR7O00UajiHTrWBRmFzcy00A/high.mp4)
+
+  ## Contact
+
+  - Twitter
+
+  - Email
   `;
 
   const handleClose = (value: string) => {
