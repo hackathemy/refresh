@@ -66,29 +66,29 @@ export const FundingHistory = () => {
                         {funding.project_title}
                       </Link>
                     </TableCell>
-                    <TableCell style={{paddingLeft: 1}}>
+                    <TableCell style={{ paddingLeft: 1 }}>
                       <ListItem disableGutters>
                         <ListItemAvatar>
-                
-              
-                      
-                        {funding.chain == 'Sepolia' && (            
-                          <Avatar src="/assets/images/eth-diamond-black-white.jpg"/>                   
-                        )}
-                        {funding.chain == 'Fuji' && (            
-                          <Avatar src="/assets/images/avalanche-avax-logo.svg"/>                  
-                        )}
-                        {funding.chain == 'Bnb' && (            
-                          <Avatar sx={{width:70, height:50, marginLeft:-2}} src="/assets/images/binance-smart-chain-bsc-seeklogo.com.svg"/>               
-                        )}
-                        {funding.chain == 'Optimism' && (            
-                          <Avatar sx={{width:40, height:40,}} src="https://cryptologos.cc/logos/optimism-ethereum-op-logo.png"/>                  
-                        )}
-                        </ListItemAvatar>
-                            <ListItemText
-                              primary={funding.chain}
+                          {funding.chain == "Sepolia" && (
+                            <Avatar src="/assets/images/eth-diamond-black-white.jpg" />
+                          )}
+                          {funding.chain == "Fuji" && (
+                            <Avatar src="/assets/images/avalanche-avax-logo.svg" />
+                          )}
+                          {funding.chain == "Bnb" && (
+                            <Avatar
+                              sx={{ width: 70, height: 50, marginLeft: -2 }}
+                              src="/assets/images/binance-smart-chain-bsc-seeklogo.com.svg"
                             />
-                    
+                          )}
+                          {funding.chain == "Optimism" && (
+                            <Avatar
+                              sx={{ width: 40, height: 40 }}
+                              src="https://cryptologos.cc/logos/optimism-ethereum-op-logo.png"
+                            />
+                          )}
+                        </ListItemAvatar>
+                        <ListItemText primary={funding.chain} />
                       </ListItem>
                     </TableCell>
                     <TableCell>
