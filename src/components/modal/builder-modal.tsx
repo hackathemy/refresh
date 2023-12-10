@@ -72,7 +72,7 @@ export default function CredentialDialog(props: ICredentialDialogProps) {
     <Dialog onClose={handleClose} open={open}>
       <DialogTitle variant="h3">Builder Credential</DialogTitle>
       <DialogContent>
-        <Typography variant="subtitle1">
+        <Typography variant="subtitle1" sx={{ mb: 3 }}>
           Authenticate your identity for builder authority( Polygon ID ).
           <br />
           Your credentials are securely authenticated with zk.

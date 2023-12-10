@@ -43,7 +43,7 @@ export default function FunderVotingDialog(props: IVotingDialogProps) {
     <Dialog onClose={handleClose} open={open}>
       <DialogTitle variant="h3">Voting for execute fund</DialogTitle>
       <DialogContent>
-        <Typography variant="subtitle1">
+        <Typography variant="subtitle1" sx={{ mb: 3 }}>
           Authenticate your identity for funder authority( Polygon ID ).
           <br />
           Your credentials are securely authenticated with zk.

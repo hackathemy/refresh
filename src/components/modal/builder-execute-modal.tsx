@@ -43,7 +43,7 @@ export default function BuilderVotingDialog(props: IVotingDialogProps) {
     <Dialog onClose={handleClose} open={open}>
       <DialogTitle variant="h3">Withdraw Funding</DialogTitle>
       <DialogContent>
-        <Typography variant="subtitle1">
+        <Typography variant="subtitle1" sx={{ mb: 3 }}>
           Authenticate your identity for fund builder authority( Polygon ID ).
           <br />
           Your credentials are securely authenticated with zk.
