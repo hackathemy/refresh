@@ -11,13 +11,17 @@ import {
   SvgIcon,
   Typography,
 } from "@mui/material";
+import { fetchEnsName, fetchEnsAvatar } from "@wagmi/core";
 
 import { FaceSmileIcon, TrophyIcon } from "@heroicons/react/24/solid";
 import { useState, useRef, useEffect } from "react";
 import { Progress } from "../progress/linear-progress";
 import { formatNumber, maskAddress } from "@/functions/string-functions";
+import { EnsNameCard } from "../ens/namecard";
 
 export const ProjectCard = ({ project }: any) => {
+  const [ensName, setEnsName] = useState("");
+  const [ensAvatar, setEnsAvatar] = useState("");
   const itKeywords = [
     "coding",
     "programming",
@@ -30,6 +34,32 @@ export const ProjectCard = ({ project }: any) => {
     "web development",
     "network",
   ];
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (project) {
+        const name = await fetchEnsName({
+          address: project.writer,
+          chainId: 11155111,
+        });
+
+        if (name) {
+          setEnsName(name);
+
+          const avatarUrl = await fetchEnsAvatar({
+            name: name,
+            chainId: 11155111,
+          });
+
+          if (avatarUrl) {
+            setEnsAvatar(avatarUrl);
+          }
+        }
+      }
+    };
+    fetchData();
+  }, [project]);
+
   return (
     <Card>
       <CardActionArea href={`/project/${project.id}`}>
@@ -67,10 +97,18 @@ export const ProjectCard = ({ project }: any) => {
             >
               {project.desc}
             </Typography>
-            <Typography variant="body2" sx={{ mt: 1 }} color="text.secondary">
-              {project.start_date} ~ {project.end_date} | {"  "}
-              {maskAddress(project.writer)}
+            <Typography
+              variant="body2"
+              sx={{ mt: 1, mb: 1 }}
+              color="text.secondary"
+            >
+              {project.start_date} ~ {project.end_date} |
             </Typography>
+            {ensName ? (
+              <EnsNameCard name={ensName} avatar={ensAvatar} />
+            ) : (
+              <>{maskAddress(project.writer)}</>
+            )}
           </Box>
           <Box sx={{ width: "100%", marginTop: 2 }}>
             <Stack direction="row" spacing={1}>

@@ -1,18 +1,12 @@
 import { Box, SvgIcon, Typography } from "@mui/material";
 import { ChevronRightIcon } from "@heroicons/react/24/solid";
 import { useState, useEffect } from "react";
-import { useSetRecoilState, useRecoilValue } from "recoil";
-import { walletState } from "@/recoil/state";
-import useAccount from "@/hooks/useAccount";
 
-import TransferForm from "./TransferForm";
-import { useWeb3 } from "@/hooks/useWeb3";
-import TokenContract from "../../public/assets/abi/sender_abi.json";
 import { MetaMaskInpageProvider } from "@metamask/providers";
 import Web3 from "web3";
 
 import { maskAddress } from "@/functions/string-functions";
-
+import { useEnsAvatar, useEnsName } from "wagmi";
 
 function WalletButton(): JSX.Element {
   //const [account, web3] = useWeb3();
@@ -184,4 +178,3 @@ export default WalletButton;
 function logout() {
   throw new Error("Function not implemented.");
 }
-
