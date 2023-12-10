@@ -39,6 +39,7 @@ export default function SimpleDialog(props: SimpleDialogProps) {
   const [ethAmount, setEthAmount] = useState("0");
   const [avaxAmount, setAvaxAmount] = useState("0");
   const [bnbAmount, setBnbAmount] = useState("0");
+  const [opAmount, setOpAmount] = useState("0");
   const [selectChain, setSelectChain] = useState("");
   const [openOuterDialog, setOpenOuterDialog] = useState(false);
   const [openInnerDialog, setOpenInnerDialog] = useState(false);
@@ -72,6 +73,8 @@ export default function SimpleDialog(props: SimpleDialogProps) {
       setTokenAmount(ethAmount);
     } else if (selectChain === "Bnb") {
       setTokenAmount(bnbAmount);
+    } else if (selectChain === "Optimism") {
+      setTokenAmount(opAmount);
     }
     setOpenInnerDialog(true);
   };
@@ -227,6 +230,7 @@ export default function SimpleDialog(props: SimpleDialogProps) {
       getTokenAmountBySepolia();
       getTokenAmountByFuji();
       getTokenAmountByBsc();
+      getTokenAmountByOp();
     } catch (error) {
       console.error("Error CCIP :", error);
       alert("Error transferring tokens. Check the console for details.");
@@ -386,12 +390,50 @@ const getTransactionReceipt = async (transactionHash:string) => {
     setBnbAmount(formattedResult.substring(0,5));
   };
 
+  const getTokenAmountByOp = async () => {
+ 
+    const bscURL = 'https://goerli.optimism.io';
+    const bsc = new Web3(
+      new Web3.providers.HttpProvider(bscURL ?? "")
+    );
+
+    // DAI token contract
+    const tokenContract = "0xaBfE9D11A2f1D61990D1d253EC98B5Da00304F16";
+    // A DAI token holder
+    const tokenHolder = window.ethereum.selectedAddress;
+    const contract = new bsc.eth.Contract(Erc20TokenContract, tokenContract);
+
+    const result = await (contract.methods as any)
+      .balanceOf(tokenHolder)
+      .call();
+      console.log(result);
+      
+    const formattedResult = Utils.formatUnits(result, "ether");
+    //console.log();
+
+    // Removing the '0x' prefix
+    // const cleanedHex = balances.tokenBalances[0].tokenBalance?.slice(2);
+
+    // 16진수를 10진수로 변환
+    //const decimalValue = BigInt('0x' + cleanedHex);
+
+    // wei에서 ether로 변환
+    //const etherValue = web3.utils.fromWei(decimalValue.toString(), 'ether');
+
+    console.log("OP Testnet Token Balances: " + formattedResult.substring(0,5));
+    //const etherValue = web3.utils.fromWei(parseInt(balances.tokenBalances.tokenBalance, 16), 'ether');
+    //console.log(etherValue);
+
+    setOpAmount(formattedResult.substring(0,5));
+  };
+
   useEffect(() => {
     const isConnect = localStorage.getItem('isConnect');
     if(isConnect == 'true'){
       getTokenAmountBySepolia();
       getTokenAmountByFuji();
       getTokenAmountByBsc();
+      getTokenAmountByOp();
     }
    
   }, []);
@@ -438,6 +480,20 @@ const getTransactionReceipt = async (transactionHash:string) => {
               </ListItemAvatar>
               <ListItemText
                 primary={`Bsc Testnet 보유 BNM 수량 : ${bnbAmount} CCIP-BnM`}
+              />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disableGutters>
+            <ListItemButton
+              onClick={() => handleOpenInnerDialog("Optimism")}
+            >
+              <ListItemAvatar>
+                <Avatar sx={{width:40, height:40,}} src="https://cryptologos.cc/logos/optimism-ethereum-op-logo.png">
+                  <PersonIcon />
+                </Avatar>
+              </ListItemAvatar>
+              <ListItemText
+                primary={`Optimism 보유 BNM 수량 : ${opAmount} CCIP-BnM`}
               />
             </ListItemButton>
           </ListItem>
