@@ -14,8 +14,8 @@ import {
 } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { TrophyIcon, FaceSmileIcon } from "@heroicons/react/24/solid";
-import VotingDialog from "../modal/voting-modal";
-import CredentialDialog from "../modal/credential-modal";
+import VotingDialog from "../modal/builder-execute-modal";
+import CredentialDialog from "../modal/builder-modal";
 
 export const MyCard = ({ dao }: any) => {
   const [open, setOpen] = useState(false);

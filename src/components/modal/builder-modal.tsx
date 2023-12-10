@@ -70,7 +70,7 @@ export default function CredentialDialog(props: ICredentialDialogProps) {
 
   return (
     <Dialog onClose={handleClose} open={open}>
-      <DialogTitle variant="h3">Credential</DialogTitle>
+      <DialogTitle variant="h3">Builder Credential</DialogTitle>
       <DialogContent
         sx={{
           display: "flex",
@@ -78,10 +78,11 @@ export default function CredentialDialog(props: ICredentialDialogProps) {
           justifyContent: "center",
         }}
       >
-        <Typography variant="body1">
-          Increase the trust level of the project by authenticating your
-          identity with PolygonID. Your authentication information is stored
-          securely in zk.
+        <Typography variant="subtitle1">
+          Authenticate your identity for funder authority( Polygon ID ).
+          <br />
+          <br />
+          Your credentials are securely authenticated with zk.
         </Typography>
         {qrCodeValue && (
           <QRCode value={qrCodeValue} style={{ width: 250, height: 250 }} />

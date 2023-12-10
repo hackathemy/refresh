@@ -49,10 +49,11 @@ export default function VotingDialog(props: IVotingDialogProps) {
           justifyContent: "center",
         }}
       >
-        <Typography variant="body1">
-          Increase the trust level of the project by authenticating your
-          identity with PolygonID. Your authentication information is stored
-          securely in zk.
+        <Typography variant="subtitle1">
+          Authenticate your identity for fund builder authority( Polygon ID ).
+          <br />
+          <br />
+          Your credentials are securely authenticated with zk.
         </Typography>
         {qrCodeValue && (
           <QRCode value={qrCodeValue} style={{ width: 250, height: 250 }} />
