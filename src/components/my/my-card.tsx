@@ -102,7 +102,7 @@ export const MyCard = ({ dao }: any) => {
               <TrophyIcon />
             </SvgIcon>
             <Typography display="inline" variant="body2" color="text.secondary">
-              Total
+              Goal
             </Typography>
             <Typography display="inline" variant="subtitle2">
               {dao.goal} CCIP-BnM
@@ -113,7 +113,7 @@ export const MyCard = ({ dao }: any) => {
               <FaceSmileIcon />
             </SvgIcon>
             <Typography display="inline" variant="body2" color="text.secondary">
-              My funding
+              Total Funding
             </Typography>
             <Typography display="inline" variant="subtitle2">
               {dao.amount ?? 0} CCIP-BnM

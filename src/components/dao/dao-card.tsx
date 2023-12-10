@@ -41,33 +41,6 @@ export const DaoCard = ({ dao }: any) => {
   const handleCredentialClose = () => {
     setOpenCredential(false);
   };
-  const [progress, setProgress] = useState(0);
-  const [buffer, setBuffer] = useState(10);
-
-  const progressRef = useRef(() => {});
-  useEffect(() => {
-    progressRef.current = () => {
-      if (progress > 100) {
-        setProgress(0);
-        setBuffer(10);
-      } else {
-        const diff = Math.random() * 10;
-        const diff2 = Math.random() * 10;
-        setProgress(progress + diff);
-        setBuffer(progress + diff + diff2);
-      }
-    };
-  });
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      progressRef.current();
-    }, 500);
-
-    return () => {
-      clearInterval(timer);
-    };
-  }, []);
 
   return (
     <Card>
@@ -130,7 +103,7 @@ export const DaoCard = ({ dao }: any) => {
               <TrophyIcon />
             </SvgIcon>
             <Typography display="inline" variant="body2" color="text.secondary">
-              Total
+              Goal
             </Typography>
             <Typography display="inline" variant="subtitle2">
               {dao.goal} CCIP-BnM
@@ -141,7 +114,7 @@ export const DaoCard = ({ dao }: any) => {
               <FaceSmileIcon />
             </SvgIcon>
             <Typography display="inline" variant="body2" color="text.secondary">
-              My funding
+              My Funding Amount
             </Typography>
             <Typography display="inline" variant="subtitle2">
               {dao.amount ?? 0} CCIP-BnM
