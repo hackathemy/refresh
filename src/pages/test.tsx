@@ -3,9 +3,7 @@ import * as material from "@mui/material";
 import { Layout as DashboardLayout } from "../layouts/dashboard/layout";
 import { ethers } from "ethers";
 import { networks } from "@/types/networks";
-import React, { useState, ChangeEvent, KeyboardEvent } from "react";
-
-// import { useWeb3 } from "@/hooks/useWeb3";
+import React, { useState, KeyboardEvent } from "react";
 
 const Page = () => {
   // TODO: 이거 usestate? global state 변경해줘야 하는데 어떻게 해야할지 모르겠습니다..
@@ -14,6 +12,7 @@ const Page = () => {
 
   const [inputNetwork, setNetwork] = useState("");
   const [inputAmount, setAmount] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
@@ -110,7 +109,10 @@ const Page = () => {
       alert("Error transferring tokens. Check the console for details.");
     }
   };
-
+  const openModal = () => {
+    setIsModalOpen(true);
+    console.log(isModalOpen);
+  };
   const checkAllowance = async () => {
     try {
       // TODO: we need to add failure logic

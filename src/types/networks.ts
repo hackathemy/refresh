@@ -30,7 +30,7 @@ const networks: Networks = {
     chainId16: "0xaa36a7",
     decimal: 18,
     nativeCurrencySymbol: "ETH",
-    rpcURL: "",
+    rpcURL: "https://rpc.sepolia.org",
     blockExplorerURL: "https://sepolia.etherscan.io",
 
     explorer: (txHash) => `https://sepolia.etherscan.io/tx/${txHash}`,
@@ -39,7 +39,7 @@ const networks: Networks = {
     chainSelector: "16015286601757825753",
     linkToken: "0x779877A7B0D9E8603169DdbD7836e478b4624789",
     bnmToken: "0xFd57b4ddBf88a4e07fF4e34C487b99af2Fe82a05",
-    fundingContract: "NOT DEFINED",
+    fundingContract: "0xd6EC03DE92b00A58204A020b721705114A724E00",
   },
   fuji: {
     chainName: "Avalanche Fuji",
@@ -91,6 +91,40 @@ const networks: Networks = {
     linkToken: "0x84b9B910527Ad5C03A9Ca831909E21e236EA7b06",
     bnmToken: "0xbfa2acd33ed6eec0ed3cc06bf1ac38d22b36b9e9",
     fundingContract: "0x337A02e1757E66084820E7c7bB6ef99c7bbf7D0C",
+  },
+  optimism: {
+    chainName: "Optimism Goerli",
+    chainId: 420,
+    chainId16: "0x1a4",
+    decimal: 18,
+    nativeCurrencySymbol: "ETH",
+    rpcURL: "https://goerli.optimism.io",
+    blockExplorerURL: "https://goerli-optimism.etherscan.io",
+
+    explorer: (txHash) => `https://goerli-optimism.etherscan.io/tx/${txHash}`,
+
+    chainSelector: "2664363617261496610",
+    router: "0xcc5a0b910d9e9504a7561934bed294c51285a78d",
+    linkToken: "0xdc2CC710e42857672E7907CF474a69B63B93089f",
+    bnmToken: "0xaBfE9D11A2f1D61990D1d253EC98B5Da00304F16",
+    fundingContract: "0xd6EC03DE92b00A58204A020b721705114A724E00",
+  },
+  base: {
+    chainName: "Base Goerli",
+    chainId: 420,
+    chainId16: "0x1a4",
+    decimal: 18,
+    nativeCurrencySymbol: "ETH",
+    rpcURL: "https://goerli.optimism.io",
+    blockExplorerURL: "https://goerli-optimism.etherscan.io",
+
+    explorer: (txHash) => `https://goerli-optimism.etherscan.io/tx/${txHash}`,
+
+    chainSelector: "2664363617261496610",
+    router: "0xcc5a0b910d9e9504a7561934bed294c51285a78d",
+    linkToken: "0xdc2CC710e42857672E7907CF474a69B63B93089f",
+    bnmToken: "0xaBfE9D11A2f1D61990D1d253EC98B5Da00304F16",
+    fundingContract: "0xd6EC03DE92b00A58204A020b721705114A724E00",
   },
 };
 
