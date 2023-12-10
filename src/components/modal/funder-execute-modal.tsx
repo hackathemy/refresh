@@ -13,7 +13,7 @@ export interface IVotingDialogProps {
   contractAddress: any;
 }
 
-export default function VotingDialog(props: IVotingDialogProps) {
+export default function FunderVotingDialog(props: IVotingDialogProps) {
   const { onClose, open, contractAddress } = props;
   const [qrCodeValue, setQrCodeValue] = useState("");
   const [verifyValue, setVerifyValue] = useState();

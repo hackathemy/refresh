@@ -13,7 +13,7 @@ export interface IVotingDialogProps {
   contractAddress: any;
 }
 
-export default function VotingDialog(props: IVotingDialogProps) {
+export default function BuilderVotingDialog(props: IVotingDialogProps) {
   const { onClose, open, contractAddress } = props;
   const [qrCodeValue, setQrCodeValue] = useState("");
   const [verifyValue, setVerifyValue] = useState();
@@ -24,7 +24,7 @@ export default function VotingDialog(props: IVotingDialogProps) {
   const getVoteQr = async (contractAddress: any) => {
     try {
       // QR 코드 값 생성
-      const qrCodeData = `iden3comm://?request_uri=http://34.22.105.181:3001/v1/votes/funder/${contractAddress}`;
+      const qrCodeData = `iden3comm://?request_uri=http://34.22.105.181:3001/v1/votes/builder/${contractAddress}`;
 
       const qrURL = "";
       setQrCodeValue(qrCodeData);

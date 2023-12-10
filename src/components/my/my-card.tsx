@@ -16,6 +16,8 @@ import { useEffect, useRef, useState } from "react";
 import { TrophyIcon, FaceSmileIcon } from "@heroicons/react/24/solid";
 import VotingDialog from "../modal/builder-execute-modal";
 import CredentialDialog from "../modal/builder-modal";
+import BuilderVotingDialog from "../modal/builder-execute-modal";
+import BuilderCredentialDialog from "../modal/builder-modal";
 
 export const MyCard = ({ dao }: any) => {
   const [open, setOpen] = useState(false);
@@ -152,17 +154,13 @@ export const MyCard = ({ dao }: any) => {
         </Stack>
       </Stack>
 
-      <VotingDialog
-        open={open}
-        onClose={handleClose}
-        contractAddress={undefined}
-      />
-      <VotingDialog
+    
+      <BuilderVotingDialog
         open={open}
         onClose={handleClose}
         contractAddress={dao.contract_address}
       />
-      <CredentialDialog
+      <BuilderCredentialDialog
         open={openCredential}
         onClose={handleCredentialClose}
         projectId={dao.contract_address}
