@@ -16,7 +16,7 @@ import {
   Typography,
 } from "@mui/material";
 import { Layout as DashboardLayout } from "../../layouts/dashboard/layout";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Web3, { validator } from "web3";
 import axios from "axios";
 import PolygonContractABI from "../../../public/assets/abi/polygon_contract.json";
@@ -25,6 +25,13 @@ import { MetaMaskInpageProvider } from "@metamask/providers";
 
 const Page = () => {
   const [account, web3] = useWeb3();
+  const [writer, setWriter] = useState('');
+
+  useEffect(() => {
+    const eth = window.ethereum as MetaMaskInpageProvider;
+    setWriter(eth.selectedAddress as any);
+    formik.values.writer = eth.selectedAddress as any;
+  }, [writer]);
 
   const getCurChainId = async () => {
     const eth = window.ethereum as MetaMaskInpageProvider;
@@ -35,6 +42,7 @@ const Page = () => {
     return curChainId;
   };
 
+
   const formik = useFormik({
     initialValues: {
       title: "",
@@ -43,11 +51,14 @@ const Page = () => {
       tokenSymbol: "",
       goal: "",
       duration: "",
+      writer: "",
       submit: null,
     },
     onSubmit: async (values, helpers) => {
+      console.log(values);
+      //alues.writer = writer;
       try {
-        axios
+        await axios
           .post("/api/project", values)
           .then(async function (response) {
             if (response.status === 200) {
@@ -146,6 +157,16 @@ const Page = () => {
             <CardContent>
               <form noValidate onSubmit={formik.handleSubmit}>
                 <Stack spacing={3}>
+                  <TextField
+                      error={!!(formik.touched.writer && formik.errors.writer)}
+                      fullWidth
+                      label="Writer"
+                      name="writer"
+                      onBlur={formik.handleBlur}
+                      onChange={formik.handleChange}
+                      type="text"
+                      value={writer}
+                    />
                   <TextField
                     error={!!(formik.touched.title && formik.errors.title)}
                     fullWidth
