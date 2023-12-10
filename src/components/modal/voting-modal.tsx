@@ -10,43 +10,38 @@ const emails = ["ETH Sepolia", "Avax"];
 export interface IVotingDialogProps {
   open: boolean;
   onClose: () => void;
+  contractAddress: any;
 }
 
 export default function VotingDialog(props: IVotingDialogProps) {
-  const { onClose, open } = props;
+  const { onClose, open, contractAddress } = props;
   const [qrCodeValue, setQrCodeValue] = useState("");
   const [verifyValue, setVerifyValue] = useState();
   const handleClose = () => {
     onClose();
   };
 
-  const getQr = async () => {
+  const [project, setProject] = useState();
+
+
+  const getVoteQr = async (contractAddress : any) => {
     try {
-      const result = await axios.get(
-        `http://34.22.105.181:3000/v1/claim/authentication`,
-        {
-          withCredentials: true,
-        }
-      );
-      setVerifyValue(result.data);
-      console.log(verifyValue);
+       // QR 코드 값 생성
+      const qrCodeData = `iden3comm://?request_uri=http://34.22.105.181:3001/v1/votes/funder/${contractAddress}`;
+
+      const qrURL = "";
+      setQrCodeValue((qrCodeData));
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
 
   useEffect(() => {
-    //getQr();
-    const bscTestnetAddress = "YOUR_BSC_TESTNET_ADDRESS";
-
-    // QR 코드 값 생성 (예: BSC Testnet 주소)
-    const qrCodeData = {
-      address: bscTestnetAddress,
-    };
-
-    const qrURL = "";
-    setQrCodeValue(JSON.stringify(qrCodeData));
-  }, []);
+    if(open){
+      getVoteQr(contractAddress);
+    }
+    
+  }, [open]);
 
   return (
     <Dialog onClose={handleClose} open={open}>

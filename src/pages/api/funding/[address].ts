@@ -27,6 +27,7 @@ export default async function handler(
         " p.desc, " +
         " p.writer, " +
         " p.goal, " +        
+        " p.contract_address, " +        
         " DATE_FORMAT(p.start_date, '%Y-%m-%d') AS start_date, " +
         " DATE_FORMAT(p.end_date, '%Y-%m-%d') AS end_date, " +
         " SUM(f.amount) as amount " +

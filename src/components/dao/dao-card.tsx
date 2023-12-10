@@ -14,6 +14,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { TrophyIcon, FaceSmileIcon } from "@heroicons/react/24/solid";
 import VotingDialog from "../modal/voting-modal";
+import CredentialDialog from "../modal/credential-modal";
 
 export const DaoCard = ({ dao }: any) => {
   const itKeywords = [
@@ -30,9 +31,13 @@ export const DaoCard = ({ dao }: any) => {
   ];
 
   const [open, setOpen] = useState(false);
+  const [openCredential, setOpenCredential] = useState(false);
 
   const handleClose = () => {
     setOpen(false);
+  };
+  const handleCredentialClose = () => {
+    setOpenCredential(false);
   };
   const [progress, setProgress] = useState(0);
   const [buffer, setBuffer] = useState(10);
@@ -146,13 +151,22 @@ export const DaoCard = ({ dao }: any) => {
           size="large"
           sx={{ mt: 3 }}
           variant="contained"
+          onClick={() => setOpenCredential(true)}
+        >
+          Execution Credential
+        </Button>
+        <Button
+          size="large"
+          sx={{ mt: 3 }}
+          variant="contained"
           onClick={() => setOpen(true)}
         >
           Execution Fund
         </Button>
       </Stack>
 
-      <VotingDialog open={open} onClose={handleClose} />
+      <VotingDialog open={open} onClose={handleClose} contractAddress={dao.contract_address} />
+      <CredentialDialog open={openCredential} onClose={handleCredentialClose} projectId={dao.contract_address} />
     </Card>
   );
 };
