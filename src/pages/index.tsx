@@ -12,6 +12,7 @@ import {
   ListItem,
   Link,
   Typography,
+  Icon,
 } from "@mui/material";
 import { Layout as DashboardLayout } from "@/layouts/dashboard/layout";
 import NextLink from "next/link";
@@ -35,30 +36,51 @@ export default function Home() {
     fetchData();
   }, []);
 
+  const fundingContracts = [
+    {
+      title: "Ethereum",
+      type: "Source",
+      icon: "https://cryptologos.cc/logos/ethereum-eth-logo.png",
+      url: "https://sepolia.etherscan.io/address/0xd6EC03DE92b00A58204A020b721705114A724E00",
+    },
+    {
+      title: "Avalanche",
+      type: "Source",
+      icon: "https://cryptologos.cc/logos/avalanche-avax-logo.png",
+      url: "https://testnet.snowtrace.io/address/0xd6EC03DE92b00A58204A020b721705114A724E00",
+    },
+    {
+      title: "BNB",
+      type: "Source",
+      icon: "https://cryptologos.cc/logos/bnb-bnb-logo.png",
+      url: "https://testnet.bscscan.com/address/0x337a02e1757e66084820e7c7bb6ef99c7bbf7d0c",
+    },
+    {
+      title: "Optimism",
+      type: "Source",
+      icon: "https://cryptologos.cc/logos/optimism-ethereum-op-logo.png",
+      url: "https://goerli-optimism.etherscan.io/address/0xd6ec03de92b00a58204a020b721705114a724e00",
+    },
+    {
+      title: "Polygon",
+      type: "Destination",
+      icon: "https://cryptologos.cc/logos/polygon-matic-logo.png",
+      url: "https://mumbai.polygonscan.com/address/0x8edbc869108da99f6feb062136bc7d7aa5764542",
+    },
+  ];
+
   const resources = [
     {
-      title: "Refresh Github",
+      title: "Refresh Frontend",
       url: "https://github.com/hackathemy/refresh",
     },
     {
-      title: "Contract Github",
+      title: "Refresh Protocol Contract",
       url: "https://github.com/hackathemy/refresh-contract",
-    },
-    {
-      title: "Refresh Contract Explorer (CCIP)",
-      url: "https://",
-    },
-    {
-      title: "Refresh Contract Explorer (CCIP)",
-      url: "https://",
     },
     {
       title: "Refresh Polygon ID Implementation",
       url: "https://github.com/hackathemy/polygon-id",
-    },
-    {
-      title: "Refresh Contract Explorer (CCIP)",
-      url: "https://",
     },
   ];
   return (
@@ -266,11 +288,43 @@ export default function Home() {
       </Container>
       <Container sx={{ py: 6 }} maxWidth="md">
         <Typography gutterBottom variant="h4">
-          Resources
+          Contracts
         </Typography>
         <List>
+          {fundingContracts.map((resource) => (
+            <ListItem sx={{ flexGrow: 1 }}>
+              <Typography variant="body1">
+                <img
+                  src={resource.icon}
+                  style={{
+                    width: "20px",
+                    height: "20px",
+                    marginRight: "10px",
+                  }}
+                />
+                {resource.title}({resource.type}) :{" "}
+                <Link href={resource.url} component={NextLink}>
+                  {resource.url}
+                </Link>
+              </Typography>
+            </ListItem>
+          ))}
+        </List>
+      </Container>
+      <Container maxWidth="md">
+        <Typography gutterBottom variant="h4">
+          Resources
+        </Typography>
+        <Card
+          sx={{
+            height: "100%",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        ></Card>
+        <List>
           {resources.map((resource) => (
-            <ListItem>
+            <ListItem sx={{ flexGrow: 1 }}>
               <Typography variant="body1">
                 {resource.title} :{" "}
                 <Link href={resource.url} component={NextLink}>
