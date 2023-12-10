@@ -13,7 +13,7 @@ export interface ICredentialDialogProps {
   projectId: any;
 }
 
-export default function CredentialDialog(props: ICredentialDialogProps) {
+export default function BuilderCredentialDialog(props: ICredentialDialogProps) {
   const { onClose, open, projectId } = props;
   const [qrCodeValue, setQrCodeValue] = useState("");
   const [sessionId, setSessionId] = useState("");
