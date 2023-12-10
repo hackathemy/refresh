@@ -321,12 +321,21 @@ const Page = () => {
                       >
                         Identity Certifiate
                       </Typography>
-                      <Typography gutterBottom sx={{ mt: 2 }}>
-                        <SvgIcon color="primary" fontSize="large">
-                          <CheckBadgeIcon />
-                        </SvgIcon>
-                      </Typography>
-                      <small>with Polygon ID</small>
+                      {project?.pid_verified ? (
+                        <Typography gutterBottom sx={{ mt: 2 }}>
+                          <SvgIcon color="primary" fontSize="large">
+                            <CheckBadgeIcon />
+                          </SvgIcon>
+                          <small> with Polygon ID</small>
+                        </Typography>
+                      ) : (
+                        <Typography gutterBottom sx={{ mt: 2 }}>
+                          <SvgIcon color="warning" fontSize="large">
+                            <CheckBadgeIcon />
+                          </SvgIcon>
+                          <small> Not verified</small>
+                        </Typography>
+                      )}
                     </CardContent>
                   </Card>
                 </Grid>{" "}
@@ -347,12 +356,21 @@ const Page = () => {
                       >
                         Project Certificate
                       </Typography>
-                      <Typography gutterBottom sx={{ mt: 2 }}>
-                        <SvgIcon color="primary" fontSize="large">
-                          <CheckBadgeIcon />
-                        </SvgIcon>
-                      </Typography>
-                      <small>with Chainlink PoR</small>
+                      {project?.por_verified ? (
+                        <Typography gutterBottom sx={{ mt: 2 }}>
+                          <SvgIcon color="primary" fontSize="large">
+                            <CheckBadgeIcon />
+                          </SvgIcon>
+                          <small> with Chainlink PoR</small>
+                        </Typography>
+                      ) : (
+                        <Typography gutterBottom sx={{ mt: 2 }}>
+                          <SvgIcon color="warning" fontSize="large">
+                            <CheckBadgeIcon />
+                          </SvgIcon>
+                          <small> Not verified</small>
+                        </Typography>
+                      )}
                     </CardContent>
                   </Card>
                 </Grid>
