@@ -23,7 +23,7 @@ export default function CredentialDialog(props: ICredentialDialogProps) {
 
   const getAuthQr = async () => {
     try {
-      const result = await axios.get(`/api/vote/auth`);
+      const result = await axios.get(`/api/builder/auth`);
       // QR 코드 값 생성
       const sessionID = `${result.data.sessionID}`;
       const qrCodeData = `${result.data.qrCodeLink}`;
@@ -48,7 +48,7 @@ export default function CredentialDialog(props: ICredentialDialogProps) {
         return false;
       }
 
-      const result = await axios.get(`/api/vote/credential`, {
+      const result = await axios.get(`/api/builder/credential`, {
         params: { sessionId: sessionID },
       });
       // QR 코드 값 생성
