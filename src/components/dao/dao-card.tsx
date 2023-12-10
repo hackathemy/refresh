@@ -147,26 +147,36 @@ export const DaoCard = ({ dao }: any) => {
           </Stack>
         </Stack>
 
-        <Button
-          size="large"
-          sx={{ mt: 3 }}
-          variant="contained"
-          onClick={() => setOpenCredential(true)}
-        >
-          Execution Credential
-        </Button>
-        <Button
-          size="large"
-          sx={{ mt: 3 }}
-          variant="contained"
-          onClick={() => setOpen(true)}
-        >
-          Execution Fund
-        </Button>
+        <Stack spacing={3} direction={"row"}>
+          <Button
+            size="large"
+            sx={{ mt: 3 }}
+            variant="contained"
+            onClick={() => setOpenCredential(true)}
+          >
+            Execution Credential
+          </Button>
+          <Button
+            size="large"
+            sx={{ mt: 3 }}
+            variant="contained"
+            onClick={() => setOpen(true)}
+          >
+            Execution Fund
+          </Button>
+        </Stack>
       </Stack>
 
-      <VotingDialog open={open} onClose={handleClose} contractAddress={dao.contract_address} />
-      <CredentialDialog open={openCredential} onClose={handleCredentialClose} projectId={dao.contract_address} />
+      <VotingDialog
+        open={open}
+        onClose={handleClose}
+        contractAddress={dao.contract_address}
+      />
+      <CredentialDialog
+        open={openCredential}
+        onClose={handleCredentialClose}
+        projectId={dao.contract_address}
+      />
     </Card>
   );
 };

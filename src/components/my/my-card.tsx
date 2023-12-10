@@ -132,12 +132,11 @@ export const MyCard = ({ dao }: any) => {
           >
             Get Credential by Polygon ID
           </Button>
-
           <Button
             size="large"
             sx={{ mt: 3 }}
             variant="contained"
-            onClick={() => setOpen(true)}
+            onClick={() => alert("@TODO")}
           >
             PoR Verify
           </Button>
@@ -153,9 +152,21 @@ export const MyCard = ({ dao }: any) => {
         </Stack>
       </Stack>
 
-      <VotingDialog open={open} onClose={handleClose} contractAddress={undefined} />
-      <VotingDialog open={open} onClose={handleClose} contractAddress={dao.contract_address} />
-      <CredentialDialog open={openCredential} onClose={handleCredentialClose} projectId={dao.contract_address} />
+      <VotingDialog
+        open={open}
+        onClose={handleClose}
+        contractAddress={undefined}
+      />
+      <VotingDialog
+        open={open}
+        onClose={handleClose}
+        contractAddress={dao.contract_address}
+      />
+      <CredentialDialog
+        open={openCredential}
+        onClose={handleCredentialClose}
+        projectId={dao.contract_address}
+      />
     </Card>
   );
 };

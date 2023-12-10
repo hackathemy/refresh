@@ -247,7 +247,7 @@ const Page = () => {
               <Typography variant="h3">{project?.title}</Typography>
               <Typography variant="body1">{project?.desc}</Typography>
 
-              <Grid container spacing={2} sx={{ mb: 3 }}>
+              <Grid container spacing={2} sx={{ mb: 3, mt: 2 }}>
                 <Grid item xs={12} sm={4} md={3}>
                   <Card
                     sx={{

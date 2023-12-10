@@ -1,25 +1,27 @@
 import Head from "next/head";
-import * as material from "@mui/material";
 import { Layout as DashboardLayout } from "../layouts/dashboard/layout";
 import { ethers } from "ethers";
-import { networks } from "@/types/networks";
-import React, { useState, KeyboardEvent } from "react";
+import { mappedNetworks, networks } from "@/types/networks";
+import React, { useState, KeyboardEvent, useCallback, useEffect } from "react";
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Container,
+  Divider,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { Stack } from "@mui/system";
 
 const Page = () => {
   // TODO: 이거 usestate? global state 변경해줘야 하는데 어떻게 해야할지 모르겠습니다..
   // const [account, web3] = useWeb3();
   const PROTOCOL_ADDRESS = `0x8edbc869108da99f6feb062136bc7d7aa5764542`;
 
-  const [inputNetwork, setNetwork] = useState("");
   const [inputAmount, setAmount] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      const network = (e.target as HTMLInputElement).value;
-      setNetwork(network);
-    }
-  };
+  const [selectedNetwork, setSelectedNetwork] = useState(networks["sepolia"]);
 
   const handleKeyPressOnAmount = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
@@ -33,12 +35,10 @@ const Page = () => {
   };
 
   // TODO: What about moving these all function to function directory in next.js src
-  const SwitchNetworkComponent = () => {
-    const selectedNetwork = inputNetwork;
+  const changeNetwork = (network: any) => {
     // Save window.ethereum globally for use across multiple pages
     if (window.ethereum) {
       window.ethereum.enable(); // Enable Ethereum provider
-
       // Create an ethers provider
       const provider = new ethers.BrowserProvider(window.ethereum);
       // window.ethersProvider = provider;
@@ -46,20 +46,18 @@ const Page = () => {
       // Switch to the desired network (e.g., Binance Smart Chain)
       const switchToNetwork = async () => {
         try {
-          const chainId = "0x" + networks[selectedNetwork].chainId.toString(16);
-
           // Switch network using provider.send method
           // TODO: make this as a object for using in network types
           await provider.send("wallet_addEthereumChain", [
             {
-              chainId,
-              chainName: networks[selectedNetwork].chainName,
+              chainId: network.chainId16,
+              chainName: network.chainName,
               nativeCurrency: {
-                symbol: networks[selectedNetwork].nativeCurrencySymbol,
+                symbol: network.nativeCurrencySymbol,
                 decimals: 18,
               },
-              rpcUrls: [networks[selectedNetwork].rpcURL],
-              blockExplorerUrls: [networks[selectedNetwork].blockExplorerURL],
+              rpcUrls: [network.rpcURL],
+              blockExplorerUrls: [network.blockExplorerURL],
             },
           ]);
         } catch (error) {
@@ -79,15 +77,14 @@ const Page = () => {
       if (!window.ethereum) {
         return;
       }
-      const networkName: string = inputNetwork;
 
       // providers
       const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
 
-      const fundingContractAddress = networks[networkName].fundingContract;
+      const fundingContractAddress = selectedNetwork.fundingContract;
       // information depend on the source chain
-      const erc20ContractAddress = networks[networkName].bnmToken;
+      const erc20ContractAddress = selectedNetwork.bnmToken;
       // Connect to ERC-20 contract
       const erc20Contract = new ethers.Contract(
         erc20ContractAddress,
@@ -109,10 +106,7 @@ const Page = () => {
       alert("Error transferring tokens. Check the console for details.");
     }
   };
-  const openModal = () => {
-    setIsModalOpen(true);
-    console.log(isModalOpen);
-  };
+
   const checkAllowance = async () => {
     try {
       // TODO: we need to add failure logic
@@ -121,16 +115,12 @@ const Page = () => {
         return;
       }
 
-      // TODO: change to input? in async (networkName:string)
-      // TODO: change to use netowork name from current connected network id or name, somethign
-      const networkName: string = inputNetwork;
-      // providers
       const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
 
       // information depend on the source chain
-      const erc20ContractAddress = networks[networkName].bnmToken;
-      const fundingContractAddress = networks[networkName].fundingContract;
+      const erc20ContractAddress = selectedNetwork.bnmToken;
+      const fundingContractAddress = selectedNetwork.fundingContract;
 
       // Connect to ERC-20 contract
       // TODO: aggreate all erc20 interfaces
@@ -161,15 +151,14 @@ const Page = () => {
       if (!window.ethereum) {
         return;
       }
-      const networkName: string = inputNetwork;
 
       // providers
       const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
 
       // we need to add validate logic for users. when a user send project index which there isn't, this tx is gonna revert.
-      const fundingContractAddress = networks[networkName].fundingContract;
-      const erc20ContractAddress = networks[networkName].bnmToken;
+      const fundingContractAddress = selectedNetwork.fundingContract;
+      const erc20ContractAddress = selectedNetwork.bnmToken;
 
       // create a contract instance
       const fundingContract = new ethers.Contract(
@@ -202,81 +191,93 @@ const Page = () => {
     }
   };
 
+  const handleChange = useCallback((event: any) => {
+    const find = mappedNetworks.find((network) => {
+      return network.chainId === parseInt(event.target.value);
+    });
+    if (find) {
+      setSelectedNetwork(find);
+      changeNetwork(find);
+    }
+  }, []);
+
   return (
     <DashboardLayout>
       <Head>
         <title>Projects</title>
       </Head>
-      <material.Box
+      <Box
         sx={{
           flexGrow: 1,
           py: 8,
         }}
       >
-        <material.Container maxWidth="xl">
-          <material.Card>
-            <material.CardContent>
-              Here is a test components for interacting blockchain network and
-              contract
-              <material.Button fullWidth size="large" sx={{}}>
-                Set Network For Testing :{inputNetwork}
-                <material.TextField
-                  sx={{ ml: 3, width: "20%", height: "5%" }}
-                  type="text"
-                  label="Enter a network name"
-                  onKeyDown={handleKeyPress}
-                />
-              </material.Button>
-              <material.Button
-                fullWidth
-                size="large"
-                sx={{ mt: 3 }}
-                variant="contained"
-                onClick={SwitchNetworkComponent}
-              >
-                <div>Chain Network To {inputNetwork} </div>
-              </material.Button>
-              <material.Card sx={{ mt: 3 }}>
-                Approve Fund Token: {inputAmount}
-                <material.TextField
-                  sx={{ ml: 3, width: "20%" }}
-                  type="text"
+        <Container maxWidth="xl">
+          <Card>
+            <CardContent>
+              <Stack spacing={3}>
+                <Typography variant="h4">[DEV] Funding Flow</Typography>
+                <Divider />
+                <Typography variant="body1">
+                  Select source network for CCIP
+                </Typography>
+                <TextField
+                  label="Select Network"
+                  onChange={handleChange}
+                  required
+                  select
+                  SelectProps={{ native: true }}
+                >
+                  {mappedNetworks.map((option) => (
+                    <option key={option.chainId} value={option.chainId}>
+                      {option.chainName}
+                    </option>
+                  ))}
+                </TextField>
+                <Divider />
+                <Typography variant="body1">
+                  Approve Funding Token for Call Contracts
+                </Typography>
+                <TextField
+                  type="number"
+                  fullWidth
                   label="Enter a amout which you want to fund"
                   onKeyDown={handleKeyPressOnAmount}
                   onChange={handleChangeOnAmount}
                 />
-                <material.Button
+                <Button
                   sx={{ ml: 3 }}
                   variant="contained"
+                  size="large"
                   onClick={approveToken}
                 >
-                  Click
-                </material.Button>
-              </material.Card>
-              <material.Button
-                fullWidth
-                size="large"
-                sx={{ mt: 3 }}
-                variant="contained"
-                onClick={checkAllowance}
-              >
-                {/* // TODO:Change state by queyring contract */}
-                Check Allowance Token
-              </material.Button>
-              <material.Button
-                fullWidth
-                size="large"
-                sx={{ mt: 3 }}
-                variant="contained"
-                onClick={fundWithCCIP}
-              >
-                {/* // TODO:Change state by queyring contract */}
-                Funding: {inputAmount}
-              </material.Button>
-            </material.CardContent>
-          </material.Card>
-        </material.Container>
-      </material.Box>
+                  Approve
+                </Button>
+                <Button
+                  fullWidth
+                  size="large"
+                  sx={{ mt: 3 }}
+                  variant="contained"
+                  onClick={checkAllowance}
+                >
+                  Check Allowance Token
+                </Button>
+                <Divider />
+                <Typography variant="body1">Call Funding Contract</Typography>
+                <Button
+                  fullWidth
+                  size="large"
+                  sx={{ mt: 3 }}
+                  variant="contained"
+                  onClick={fundWithCCIP}
+                >
+                  Funding: {inputAmount}
+                </Button>
+              </Stack>
+            </CardContent>
+          </Card>
+        </Container>
+      </Box>
     </DashboardLayout>
   );
 };

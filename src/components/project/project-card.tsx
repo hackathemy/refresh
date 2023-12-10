@@ -15,6 +15,7 @@ import {
 import { FaceSmileIcon, TrophyIcon } from "@heroicons/react/24/solid";
 import { useState, useRef, useEffect } from "react";
 import { Progress } from "../progress/linear-progress";
+import { maskAddress } from "@/functions/string-functions";
 
 export const ProjectCard = ({ project }: any) => {
   const itKeywords = [
@@ -55,7 +56,7 @@ export const ProjectCard = ({ project }: any) => {
               variant="subtitle1"
               color="text.secondary"
               sx={{
-                maxHeight: 50,
+                height: 50,
                 overflow: "hidden",
                 textOverflow: "ellipsis",
                 display: "-webkit-box",
@@ -67,10 +68,8 @@ export const ProjectCard = ({ project }: any) => {
               {project.desc}
             </Typography>
             <Typography variant="body2" sx={{ mt: 1 }} color="text.secondary">
-              {project.start_date} ~ {project.end_date}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {project.writer}
+              {project.start_date} ~ {project.end_date} | {"  "}
+              {maskAddress(project.writer)}
             </Typography>
           </Box>
           <Box sx={{ width: "100%", marginTop: 2 }}>
@@ -79,11 +78,17 @@ export const ProjectCard = ({ project }: any) => {
                 label="Polygon ID Certified"
                 color="info"
                 variant="outlined"
+                disabled={project?.pid_verified}
               />
               {/* Github 입력한 것 또는 인증한 경우 */}
-              <Chip label="PoR Certified" color="info" variant="outlined" />
+              <Chip
+                label="PoR Certified"
+                color="info"
+                variant="outlined"
+                disabled
+              />
               {/* PoR 인증한 경우 */}
-              <Chip label="DAO" variant="outlined" color="info" />
+              <Chip label="DAO" variant="outlined" color="info" disabled />
               {/* DAO가 있는 경우 */}
             </Stack>
           </Box>
