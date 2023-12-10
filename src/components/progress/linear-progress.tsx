@@ -32,7 +32,7 @@ export const Progress = ({ color }: any) => {
   return (
     <LinearProgress
       variant="buffer"
-      color="secondary"
+      color={color}
       value={progress}
       valueBuffer={buffer}
     />

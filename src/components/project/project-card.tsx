@@ -15,7 +15,7 @@ import {
 import { FaceSmileIcon, TrophyIcon } from "@heroicons/react/24/solid";
 import { useState, useRef, useEffect } from "react";
 import { Progress } from "../progress/linear-progress";
-import { maskAddress } from "@/functions/string-functions";
+import { formatNumber, maskAddress } from "@/functions/string-functions";
 
 export const ProjectCard = ({ project }: any) => {
   const itKeywords = [
@@ -120,7 +120,8 @@ export const ProjectCard = ({ project }: any) => {
               Current
             </Typography>
             <Typography display="inline" variant="subtitle2">
-              {project.amount ?? 0} CCIP-BnM ( {project.peoples} Peoples )
+              {formatNumber(project.amount) ?? 0} CCIP-BnM ( {project.peoples}{" "}
+              Peoples )
             </Typography>
           </Stack>
         </Stack>
