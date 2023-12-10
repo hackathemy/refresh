@@ -14,6 +14,8 @@ export default async function handler(
         "amount,  " +
         "chain, " +
         "message_id, " +
+        "src_tx, " +
+        "dest_tx, " +
         "DATE_FORMAT(fund_date, '%Y-%m-%d') AS fund_date, " +
         "( select title from project where id = f.project_id ) as project_title" +
         " FROM funding f ORDER BY id DESC"
