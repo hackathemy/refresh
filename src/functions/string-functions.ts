@@ -1,6 +1,13 @@
 export const maskAddress = (address: string | undefined) => {
-  if (address && address.length > 6) {
+  if (address && address.length > 10) {
     return `${address.substring(0, 6)}...${address.slice(-4)}`;
+  } else {
+    return address;
+  }
+};
+export const maskContractAddress = (address: string | undefined) => {
+  if (address && address.length > 20) {
+    return `${address.substring(0, 10)}...${address.slice(-10)}`;
   } else {
     return address;
   }

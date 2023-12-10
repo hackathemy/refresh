@@ -297,12 +297,13 @@ export default function Home() {
                 <img
                   src={resource.icon}
                   style={{
-                    width: "20px",
-                    height: "20px",
+                    width: "15px",
+                    height: "15px",
                     marginRight: "10px",
                   }}
                 />
-                {resource.title}({resource.type}) :{" "}
+                {resource.title}({resource.type})
+                <br />
                 <Link href={resource.url} component={NextLink}>
                   {resource.url}
                 </Link>
@@ -311,9 +312,9 @@ export default function Home() {
           ))}
         </List>
       </Container>
-      <Container maxWidth="md">
+      <Container maxWidth="md" sx={{ mb: 10 }}>
         <Typography gutterBottom variant="h4">
-          Resources
+          Dev Resources
         </Typography>
         <Card
           sx={{
