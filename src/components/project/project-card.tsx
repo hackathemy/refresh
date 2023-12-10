@@ -78,14 +78,14 @@ export const ProjectCard = ({ project }: any) => {
                 label="Polygon ID Certified"
                 color="info"
                 variant="outlined"
-                disabled={project?.pid_verified}
+                disabled={project?.pid_verified != true}
               />
               {/* Github 입력한 것 또는 인증한 경우 */}
               <Chip
                 label="PoR Certified"
                 color="info"
                 variant="outlined"
-                disabled
+                disabled={project?.por_verified != true}
               />
               {/* PoR 인증한 경우 */}
               <Chip label="DAO" variant="outlined" color="info" disabled />
