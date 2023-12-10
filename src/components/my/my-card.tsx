@@ -15,12 +15,17 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { TrophyIcon, FaceSmileIcon } from "@heroicons/react/24/solid";
 import VotingDialog from "../modal/voting-modal";
+import CredentialDialog from "../modal/credential-modal";
 
 export const MyCard = ({ dao }: any) => {
   const [open, setOpen] = useState(false);
+  const [openCredential, setOpenCredential] = useState(false);
 
   const handleClose = () => {
     setOpen(false);
+  };
+  const handleCredentialClose = () => {
+    setOpenCredential(false);
   };
   const [progress, setProgress] = useState(0);
   const [buffer, setBuffer] = useState(10);
@@ -123,7 +128,7 @@ export const MyCard = ({ dao }: any) => {
             size="large"
             sx={{ mt: 3 }}
             variant="contained"
-            onClick={() => setOpen(true)}
+            onClick={() => setOpenCredential(true)}
           >
             Get Credential by Polygon ID
           </Button>
@@ -148,7 +153,9 @@ export const MyCard = ({ dao }: any) => {
         </Stack>
       </Stack>
 
-      <VotingDialog open={open} onClose={handleClose} />
+      <VotingDialog open={open} onClose={handleClose} contractAddress={undefined} />
+      <VotingDialog open={open} onClose={handleClose} contractAddress={dao.contract_address} />
+      <CredentialDialog open={openCredential} onClose={handleCredentialClose} projectId={dao.contract_address} />
     </Card>
   );
 };
