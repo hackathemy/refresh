@@ -96,9 +96,9 @@ export const ProjectCard = ({ project }: any) => {
         <Box sx={{ flexGrow: 1 }} />
         <Divider />
         {project.goal < project.amount ? (
-          <Progress color="secondary" />
-        ) : (
           <Progress color="success" />
+        ) : (
+          <Progress color="secondary" />
         )}
         <Stack justifyContent="space-between" spacing={2} sx={{ p: 3 }}>
           <Stack alignItems="center" direction="row" spacing={1}>
